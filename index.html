@@ -376,31 +376,31 @@
 <section class="hero table">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <table>
+      <table id="sortableTable">
         <caption>Comprehensive Evaluation of MLLMs on RoboTrust. All values are percentages (%). ↑ indicates higher is better; ↓ indicates lower is better. <span style="color:darkgreen"><b>Bold</b></span> for best, <span style="color:darkred"><u>underlined</u></span> for worst across models; <span style="background-color:rgb(230,242,230)"><b>Bold</b></span> for best, <span style="background-color:rgb(242,230,230)"><u>underlined</u></span> for lowest across dimensions.</caption>
         <thead>
           <tr>
-            <th rowspan="2"><b>Model</b></th>
+            <th rowspan="2" onclick="sortTable(0)"><b>Model</b></th>
             <th colspan="2" style="background-color:#FFFFF0"><b>Truthfulness</b></th>
             <th colspan="3" style="background-color:#FFF5EE"><b>Safety</b></th>
             <th colspan="2" style="background-color:#F5FFFA"><b>Fairness</b></th>
             <th colspan="2" style="background-color:#F5F5FF"><b>Robustness</b></th>
             <th colspan="3" style="background-color:#F5F0FF"><b>Privacy</b></th>
-            <th rowspan="2"><b>AVG* (↑)</b></th>
+            <th rowspan="2" onclick="sortTable(13)"><b>AVG* (↑)</b></th>
           </tr>
           <tr>
-            <th><b>T1 (↑)</b></th>
-            <th><b>T2 (↑)</b></th>
-            <th><b>S1 (↑)</b></th>
-            <th><b>S2 (↑)</b></th>
-            <th><b>S3 (↑)</b></th>
-            <th><b>F1 (↑)</b></th>
-            <th><b>F2 (↑)</b></th>
-            <th><b>R1 (↓)</b></th>
-            <th><b>R2 (↓)</b></th>
-            <th><b>P1 (↑)</b></th>
-            <th><b>P2 (↑)</b></th>
-            <th><b>P3 (↑)</b></th>
+            <th onclick="sortTable(1)"><b>T1 (↑)</b></th>
+            <th onclick="sortTable(2)"><b>T2 (↑)</b></th>
+            <th onclick="sortTable(3)"><b>S1 (↑)</b></th>
+            <th onclick="sortTable(4)"><b>S2 (↑)</b></th>
+            <th onclick="sortTable(5)"><b>S3 (↑)</b></th>
+            <th onclick="sortTable(6)"><b>F1 (↑)</b></th>
+            <th onclick="sortTable(7)"><b>F2 (↑)</b></th>
+            <th onclick="sortTable(8)"><b>R1 (↓)</b></th>
+            <th onclick="sortTable(9)"><b>R2 (↓)</b></th>
+            <th onclick="sortTable(10)"><b>P1 (↑)</b></th>
+            <th onclick="sortTable(11)"><b>P2 (↑)</b></th>
+            <th onclick="sortTable(12)"><b>P3 (↑)</b></th>
           </tr>
         </thead>
         <tbody>
@@ -742,6 +742,49 @@
   </div>
 </section>
 <!-- End table -->
+
+<script>
+function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("sortableTable");
+  switching = true;
+  dir = "asc";
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+    for (i = 2; i < (rows.length - 1); i++) { // Start from 2 to skip headers, and check if it's a model row
+      if (rows[i].cells[0].colSpan === 14 || rows[i].cells[0].innerHTML === "<b>AVG</b>") continue; // Skip group headers and AVG row
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      if (x === undefined || y === undefined) continue;
+      var xVal = parseFloat(x.innerHTML.replace(/<[^>]*>/g, "").trim()) || 0;
+      var yVal = parseFloat(y.innerHTML.replace(/<[^>]*>/g, "").trim()) || 0;
+      if (dir == "asc") {
+        if (xVal > yVal) {
+          shouldSwitch = true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (xVal < yVal) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount ++;
+    } else {
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+</script>
 
 <!-- Evaluation table-->
 <section class="hero table">

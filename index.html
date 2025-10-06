@@ -200,6 +200,7 @@
     transform-origin: 50% 50%;
     transition: transform 0.3s ease, background 0.3s ease;
     cursor: pointer;
+    z-index: 10;
   }
 
   /* Match colors to the table's dimension backgrounds */
@@ -228,6 +229,7 @@
     background: linear-gradient(45deg, #F5F0FF, #D5CCE6); /* Privacy */
   }
 
+  /* Fixed hover effect - now uses actual rotation */
   .sector:hover {
     transform: scale(1.1) rotate(var(--angle));
   }
@@ -245,6 +247,7 @@
     transform: translateY(-50%) scale(0.8);
     transition: opacity 0.3s ease, transform 0.3s ease;
     pointer-events: none;
+    z-index: 5;
   }
 
   .info-box.active {
@@ -1358,29 +1361,33 @@ function sortTable(n) {
 
     <!-- End of Statcounter Code -->
 <script>
-  function showInfo(infoId) {
-    // Remove active class from all sectors and info boxes
-    document.querySelectorAll('.sector').forEach(sector => sector.classList.remove('active'));
-    document.querySelectorAll('.info-box').forEach(box => box.classList.remove('active'));
-
-    // Add active class to the clicked sector and its corresponding info box
-    const sector = document.querySelector(`.sector[data-info="${infoId}"]`);
-    const infoBox = document.getElementById(infoId);
-    if (sector && infoBox) {
-      sector.classList.add('active');
-      infoBox.classList.add('active');
-    }
-  }
-
-  // Initialize: Show first info box
-  document.addEventListener('DOMContentLoaded', () => {
-    showInfo('info1');
-    // Attach click event listeners to sectors
-    document.querySelectorAll('.sector').forEach(sector => {
-      sector.addEventListener('click', () => {
-        const infoId = sector.getAttribute('data-info');
-        showInfo(infoId);
+  document.addEventListener('DOMContentLoaded', function() {
+    // Hide all info boxes
+    function hideAllInfoBoxes() {
+      document.querySelectorAll('.info-box').forEach(box => {
+        box.classList.remove('active');
       });
+    }
+
+    // Show specific info box
+    function showInfoBox(infoId) {
+      hideAllInfoBoxes();
+      document.getElementById(infoId).classList.add('active');
+    }
+
+    // Add click event to sectors
+    document.querySelectorAll('.sector').forEach(sector => {
+      sector.addEventListener('click', function() {
+        const infoId = this.getAttribute('data-info');
+        showInfoBox(infoId);
+      });
+    });
+
+    // Hide info box when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.circle') && !e.target.closest('.info-box')) {
+        hideAllInfoBoxes();
+      }
     });
   });
 </script>

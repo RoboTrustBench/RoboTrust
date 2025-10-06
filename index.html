@@ -177,116 +177,116 @@
     ]
   }
   </script>
-  <style>
+<style>
+  .perspective-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+    margin: 2rem 0;
+  }
+
+  .circle {
+    position: relative;
+    width: 300px;
+    height: 300px;
+  }
+
+  .sector {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 50%);
+    transform-origin: 50% 50%;
+    transition: transform 0.3s ease, background 0.3s ease;
+    cursor: pointer;
+  }
+
+  /* Match colors to the table's dimension backgrounds */
+  .sector[data-info="info1"] {
+    transform: rotate(0deg);
+    background: linear-gradient(45deg, #FFFFF0, #E6E6CC); /* Truthfulness */
+  }
+
+  .sector[data-info="info2"] {
+    transform: rotate(72deg);
+    background: linear-gradient(45deg, #FFF5EE, #E6D5CC); /* Safety */
+  }
+
+  .sector[data-info="info3"] {
+    transform: rotate(144deg);
+    background: linear-gradient(45deg, #F5FFFA, #CCE6E6); /* Fairness */
+  }
+
+  .sector[data-info="info4"] {
+    transform: rotate(216deg);
+    background: linear-gradient(45deg, #F5F5FF, #CCCCE6); /* Robustness */
+  }
+
+  .sector[data-info="info5"] {
+    transform: rotate(288deg);
+    background: linear-gradient(45deg, #F5F0FF, #D5CCE6); /* Privacy */
+  }
+
+  .sector:hover {
+    transform: scale(1.1) rotate(var(--angle));
+  }
+
+  .info-box {
+    position: absolute;
+    top: 50%;
+    left: 110%;
+    width: 250px;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateY(-50%) scale(0.8);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+  }
+
+  .info-box.active {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+
+  .info-box h3 {
+    margin: 0 0 0.5rem;
+    color: #333;
+    font-size: 1.25rem;
+  }
+
+  .info-box p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
     .perspective-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 400px;
-      margin: 2rem 0;
-    }
-  
-    .circle {
-      position: relative;
-      width: 300px;
       height: 300px;
     }
-  
-    .sector {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 50%);
-      transform-origin: 50% 50%;
-      transition: transform 0.3s ease, background 0.3s ease;
-      cursor: pointer;
+    .circle {
+      width: 200px;
+      height: 200px;
     }
-  
-    /* Match colors to the table's dimension backgrounds */
-    .sector:nth-child(1) {
-      transform: rotate(0deg);
-      background: linear-gradient(45deg, #FFFFF0, #E6E6CC); /* Truthfulness */
-    }
-  
-    .sector:nth-child(3) {
-      transform: rotate(72deg);
-      background: linear-gradient(45deg, #FFF5EE, #E6D5CC); /* Safety */
-    }
-  
-    .sector:nth-child(5) {
-      transform: rotate(144deg);
-      background: linear-gradient(45deg, #F5FFFA, #CCE6E6); /* Fairness */
-    }
-  
-    .sector:nth-child(7) {
-      transform: rotate(216deg);
-      background: linear-gradient(45deg, #F5F5FF, #CCCCE6); /* Robustness */
-    }
-  
-    .sector:nth-child(9) {
-      transform: rotate(288deg);
-      background: linear-gradient(45deg, #F5F0FF, #D5CCE6); /* Privacy */
-    }
-  
-    .sector:hover {
-      transform: scale(1.1) rotate(var(--angle));
-    }
-  
     .info-box {
-      position: absolute;
-      top: 50%;
-      left: 110%;
-      width: 250px;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      opacity: 0;
-      transform: translateY(-50%) scale(0.8);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      pointer-events: none;
+      width: 180px;
+      left: 105%;
+      padding: 0.75rem;
     }
-  
-    .sector.active + .info-box {
-      opacity: 1;
-      transform: translateY(-50%) scale(1);
-    }
-  
     .info-box h3 {
-      margin: 0 0 0.5rem;
-      color: #333;
-      font-size: 1.25rem;
+      font-size: 1rem;
     }
-  
     .info-box p {
-      margin: 0;
-      color: #666;
-      font-size: 0.9rem;
-      line-height: 1.4;
+      font-size: 0.8rem;
     }
-  
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .perspective-container {
-        height: 300px;
-      }
-      .circle {
-        width: 200px;
-        height: 200px;
-      }
-      .info-box {
-        width: 180px;
-        left: 105%;
-        padding: 0.75rem;
-      }
-      .info-box h3 {
-        font-size: 1rem;
-      }
-      .info-box p {
-        font-size: 0.8rem;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 
@@ -491,31 +491,31 @@
           <div class="perspective-container">
             <div class="circle">
               <!-- Sector 1: Truthfulness -->
-              <div class="sector" data-angle="0deg" onclick="showInfo(1)"></div>
+              <div class="sector" data-angle="0deg" data-info="info1"></div>
               <div class="info-box" id="info1">
                 <h3>Truthfulness</h3>
                 <p>Evaluates factual consistency and accuracy of MLLMs in embodied tasks, ensuring reliable information delivery.</p>
               </div>
               <!-- Sector 2: Safety -->
-              <div class="sector" data-angle="72deg" onclick="showInfo(2)"></div>
+              <div class="sector" data-angle="72deg" data-info="info2"></div>
               <div class="info-box" id="info2">
                 <h3>Safety</h3>
                 <p>Assesses risk perception and proactive avoidance in dynamic environments to ensure safe operations.</p>
               </div>
               <!-- Sector 3: Fairness -->
-              <div class="sector" data-angle="144deg" onclick="showInfo(3)"></div>
+              <div class="sector" data-angle="144deg" data-info="info3"></div>
               <div class="info-box" id="info3">
                 <h3>Fairness</h3>
                 <p>Examines bias and preference in decision-making to promote equitable outcomes in embodied agents.</p>
               </div>
               <!-- Sector 4: Robustness -->
-              <div class="sector" data-angle="216deg" onclick="showInfo(4)"></div>
+              <div class="sector" data-angle="216deg" data-info="info4"></div>
               <div class="info-box" id="info4">
                 <h3>Robustness</h3>
                 <p>Tests resilience under perturbations and unexpected disturbances in real-world scenarios.</p>
               </div>
               <!-- Sector 5: Privacy -->
-              <div class="sector" data-angle="288deg" onclick="showInfo(5)"></div>
+              <div class="sector" data-angle="288deg" data-info="info5"></div>
               <div class="info-box" id="info5">
                 <h3>Privacy</h3>
                 <p>Evaluates protection of sensitive data and user privacy in embodied interactions.</p>
@@ -1358,18 +1358,30 @@ function sortTable(n) {
 
     <!-- End of Statcounter Code -->
 <script>
-  function showInfo(index) {
+  function showInfo(infoId) {
+    // Remove active class from all sectors and info boxes
     document.querySelectorAll('.sector').forEach(sector => sector.classList.remove('active'));
-    document.querySelectorAll('.info-box').forEach(box => box.style.opacity = '0');
-    const sector = document.querySelector(`.sector:nth-child(${index * 2 - 1})`);
-    sector.classList.add('active');
-    const infoBox = document.getElementById(`info${index}`);
-    infoBox.style.opacity = '1';
+    document.querySelectorAll('.info-box').forEach(box => box.classList.remove('active'));
+
+    // Add active class to the clicked sector and its corresponding info box
+    const sector = document.querySelector(`.sector[data-info="${infoId}"]`);
+    const infoBox = document.getElementById(infoId);
+    if (sector && infoBox) {
+      sector.classList.add('active');
+      infoBox.classList.add('active');
+    }
   }
 
   // Initialize: Show first info box
   document.addEventListener('DOMContentLoaded', () => {
-    showInfo(1);
+    showInfo('info1');
+    // Attach click event listeners to sectors
+    document.querySelectorAll('.sector').forEach(sector => {
+      sector.addEventListener('click', () => {
+        const infoId = sector.getAttribute('data-info');
+        showInfo(infoId);
+      });
+    });
   });
 </script>
   </body>

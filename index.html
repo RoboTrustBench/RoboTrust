@@ -196,7 +196,8 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 50%);
+      /* 调整clip-path为更精确的72度扇形（从中心到边缘） */
+      clip-path: polygon(50% 50%, 50% 0%, calc(50% + 50% * cos(72deg)) calc(50% - 50% * sin(72deg)));
       transform-origin: 50% 50%;
       transition: transform 0.3s ease, background 0.3s ease;
       cursor: pointer;
@@ -205,33 +206,38 @@
   
     /* Match colors to the table's dimension backgrounds */
     .sector[data-info="info1"] {
-      transform: rotate(0deg);
+      --angle: 0deg;
+      transform: rotate(var(--angle));
       background: linear-gradient(45deg, #FFFFF0, #E6E6CC); /* Truthfulness */
     }
   
     .sector[data-info="info2"] {
-      transform: rotate(72deg);
+      --angle: 72deg;
+      transform: rotate(var(--angle));
       background: linear-gradient(45deg, #FFF5EE, #E6D5CC); /* Safety */
     }
   
     .sector[data-info="info3"] {
-      transform: rotate(144deg);
+      --angle: 144deg;
+      transform: rotate(var(--angle));
       background: linear-gradient(45deg, #F5FFFA, #CCE6E6); /* Fairness */
     }
   
     .sector[data-info="info4"] {
-      transform: rotate(216deg);
+      --angle: 216deg;
+      transform: rotate(var(--angle));
       background: linear-gradient(45deg, #F5F5FF, #CCCCE6); /* Robustness */
     }
   
     .sector[data-info="info5"] {
-      transform: rotate(288deg);
+      --angle: 288deg;
+      transform: rotate(var(--angle));
       background: linear-gradient(45deg, #F5F0FF, #D5CCE6); /* Privacy */
     }
   
-    /* Fixed hover effect - now uses actual rotation */
+    /* 修复hover效果：先rotate保持位置，再scale放大 */
     .sector:hover {
-      transform: scale(1.1) rotate(var(--angle));
+      transform: rotate(var(--angle)) scale(1.1);
     }
   
     .info-box {
@@ -253,6 +259,7 @@
     .info-box.active {
       opacity: 1;
       transform: translateY(-50%) scale(1);
+      pointer-events: auto; /* 允许点击info-box内部 */
     }
   
     .info-box h3 {
@@ -290,37 +297,6 @@
       }
     }
   </style>
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Hide all info boxes
-    function hideAllInfoBoxes() {
-      document.querySelectorAll('.info-box').forEach(box => {
-        box.classList.remove('active');
-      });
-    }
-
-    // Show specific info box
-    function showInfoBox(infoId) {
-      hideAllInfoBoxes();
-      document.getElementById(infoId).classList.add('active');
-    }
-
-    // Add click event to sectors
-    document.querySelectorAll('.sector').forEach(sector => {
-      sector.addEventListener('click', function() {
-        const infoId = this.getAttribute('data-info');
-        showInfoBox(infoId);
-      });
-    });
-
-    // Hide info box when clicking outside
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('.circle') && !e.target.closest('.info-box')) {
-        hideAllInfoBoxes();
-      }
-    });
-  });
-</script>
 </head>
 <body>
 
@@ -1391,6 +1367,47 @@ function sortTable(n) {
 <!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
 
     <!-- End of Statcounter Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Hide all info boxes
+    function hideAllInfoBoxes() {
+      document.querySelectorAll('.info-box').forEach(box => {
+        box.classList.remove('active');
+      });
+    }
 
+    // Show specific info box
+    function showInfoBox(infoId) {
+      hideAllInfoBoxes();
+      document.getElementById(infoId).classList.add('active');
+    }
+
+    // Add click and hover events to sectors
+    document.querySelectorAll('.sector').forEach(sector => {
+      sector.addEventListener('click', function() {
+        const infoId = this.getAttribute('data-info');
+        showInfoBox(infoId);
+      });
+
+      // 添加hover显示（可选，提升UX）
+      sector.addEventListener('mouseenter', function() {
+        const infoId = this.getAttribute('data-info');
+        showInfoBox(infoId);
+      });
+    });
+
+    // Hide info box when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.circle') && !e.target.closest('.info-box')) {
+        hideAllInfoBoxes();
+      }
+    });
+
+    // Hide info box when mouse leaves the circle (for hover)
+    document.querySelector('.circle').addEventListener('mouseleave', function() {
+      hideAllInfoBoxes();
+    });
+  });
+</script>
   </body>
   </html>

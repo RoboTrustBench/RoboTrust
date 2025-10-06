@@ -177,6 +177,106 @@
     ]
   }
   </script>
+      <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Section Perspective Module</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* 背景渐变 */
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+        }
+
+        .circle {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .sector {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 50%); /* 初始扇形路径 */
+            transform-origin: 50% 50%; /* 旋转中心 */
+            transition: transform 0.3s ease, background 0.3s ease;
+            cursor: pointer;
+        }
+
+        /* 为每个扇形设置旋转角度和渐变配色 */
+        .sector:nth-child(1) {
+            transform: rotate(0deg);
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+        }
+
+        .sector:nth-child(2) {
+            transform: rotate(72deg);
+            background: linear-gradient(45deg, #ff8e53, #feca57);
+        }
+
+        .sector:nth-child(3) {
+            transform: rotate(144deg);
+            background: linear-gradient(45deg, #feca57, #48dbfb);
+        }
+
+        .sector:nth-child(4) {
+            transform: rotate(216deg);
+            background: linear-gradient(45deg, #48dbfb, #1dd1a1);
+        }
+
+        .sector:nth-child(5) {
+            transform: rotate(288deg);
+            background: linear-gradient(45deg, #1dd1a1, #ff6b6b);
+        }
+
+        /* 鼠标悬停时放大效果 */
+        .sector:hover {
+            transform: scale(1.1) rotate(var(--angle));
+        }
+
+        /* 文字栏样式 */
+        .info-box {
+            position: absolute;
+            top: 50%;
+            left: 110%;
+            width: 200px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(-50%) scale(0.8);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none; /* 防止文字栏干扰鼠标事件 */
+        }
+
+        /* 显示文字栏 */
+        .sector.active + .info-box {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+        }
+
+        .info-box h3 {
+            margin: 0 0 10px;
+            color: #333;
+        }
+
+        .info-box p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
 
@@ -372,6 +472,63 @@
 </section>
 <!-- End paper abstract -->
 
+<!-- Section Perspective abstract -->
+<div class="container">
+        <div class="circle">
+            <!-- 五个扇形区域 -->
+            <div class="sector" data-angle="0deg" onclick="showInfo(1)"></div>
+            <div class="info-box" id="info1">
+                <h3>Truthfulness</h3>
+                <p>Truthfulness</p>
+            </div>
+
+            <div class="sector" data-angle="72deg" onclick="showInfo(2)"></div>
+            <div class="info-box" id="info2">
+                <h3>Safety</h3>
+                <p>这是第二个部分的介绍内容，描述相关信息。</p>
+            </div>
+
+            <div class="sector" data-angle="144deg" onclick="showInfo(3)"></div>
+            <div class="info-box" id="info3">
+                <h3>Fairness</h3>
+                <p>这是第三个部分的介绍内容，描述相关信息。</p>
+            </div>
+
+            <div class="sector" data-angle="216deg" onclick="showInfo(4)"></div>
+            <div class="info-box" id="info4">
+                <h3>Privacy</h3>
+                <p>这是第四个部分的介绍内容，描述相关信息。</p>
+            </div>
+
+            <div class="sector" data-angle="288deg" onclick="showInfo(5)"></div>
+            <div class="info-box" id="info5">
+                <h3>Robust</h3>
+                <p>这是第五个部分的介绍内容，描述相关信息。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 点击扇形显示对应文字栏
+        function showInfo(index) {
+            // 移除所有扇形的active类
+            document.querySelectorAll('.sector').forEach(sector => sector.classList.remove('active'));
+            // 隐藏所有文字栏
+            document.querySelectorAll('.info-box').forEach(box => box.style.opacity = '0');
+            
+            // 为点击的扇形添加active类
+            const sector = document.querySelector(`.sector:nth-child(${index * 2 - 1})`);
+            sector.classList.add('active');
+            
+            // 显示对应的文字栏
+            const infoBox = document.getElementById(`info${index}`);
+            infoBox.style.opacity = '1';
+        }
+
+        // 初始化：默认显示第一个文字栏
+        showInfo(1);
+    </script>
+<!-- End Section Perspective abstract -->
 <!-- Table -->
 <section class="hero table">
   <div class="container is-max-desktop">

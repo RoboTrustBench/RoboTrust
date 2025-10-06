@@ -911,69 +911,45 @@
 
 <script>
 function sortTable(n) {
-  var table = document.getElementById("sortableTable");
-  if (!table) return;
-
-  // 获取所有 tbody 中的行（不包括 thead/tfoot）
-  var tbody = table.tBodies[0] || table;
-  var rows = Array.from(tbody.rows);
-
-  // 识别 AVG 行（更健壮的判断）
-  function isAvgRow(row) {
-    if (row.cells.length === 0) return false;
-    var firstCellText = row.cells[0].textContent.trim();
-    return firstCellText === "AVG" || firstCellText === "<b>AVG</b>";
-  }
-
-  // 识别分组标题行（例如 colSpan > 1）
-  function isGroupHeader(row) {
-    return row.cells.length > 0 && (row.cells[0].colSpan > 1 || row.cells[0].rowSpan > 1);
-  }
-
-  // 分离普通数据行、AVG 行、分组行
-  var dataRows = [];
-  var avgRow = null;
-  var otherRows = []; // 分组标题等
-
-  rows.forEach(row => {
-    if (isAvgRow(row)) {
-      avgRow = row;
-    } else if (isGroupHeader(row)) {
-      otherRows.push(row);
-    } else {
-      dataRows.push(row);
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("sortableTable");
+  switching = true;
+  dir = "asc";
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+    for (i = 2; i < (rows.length - 1); i++) { // Start from 2 to skip headers, and check if it's a model row
+      if (rows[i].cells[0].colSpan === 14 || rows[i].cells[0].innerHTML === "<b>AVG</b>") continue; // Skip group headers and AVG row
+      if (rows[i + 1].cells[0].colSpan === 14 || rows[i + 1].cells[0].innerHTML === "<b>AVG</b>") continue; // Also skip if next row is group header or AVG
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      if (x === undefined || y === undefined) continue;
+      var xVal = parseFloat(x.innerHTML.replace(/<[^>]*>/g, "").trim()) || 0;
+      var yVal = parseFloat(y.innerHTML.replace(/<[^>]*>/g, "").trim()) || 0;
+      if (dir == "asc") {
+        if (xVal > yVal) {
+          shouldSwitch = true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (xVal < yVal) {
+          shouldSwitch = true;
+          break;
+        }
+      }
     }
-  });
-
-  // 对数据行排序
-  dataRows.sort(function(a, b) {
-    var x = a.cells[n]?.innerHTML?.replace(/<[^>]*>/g, "").trim() || "";
-    var y = b.cells[n]?.innerHTML?.replace(/<[^>]*>/g, "").trim() || "";
-
-    // 尝试解析为数字
-    var xNum = parseFloat(x);
-    var yNum = parseFloat(y);
-    var xIsNum = !isNaN(xNum) && x !== "";
-    var yIsNum = !isNaN(yNum) && y !== "";
-
-    if (xIsNum && yIsNum) {
-      return xNum - yNum; // 数值升序
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount ++;
     } else {
-      return x.localeCompare(y); // 字符串比较
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
     }
-  });
-
-  // 重新构建 tbody：数据行 + 其他行（分组标题）+ AVG 行（固定在最后）
-  var fragment = document.createDocumentFragment();
-  dataRows.forEach(row => fragment.appendChild(row));
-  otherRows.forEach(row => fragment.appendChild(row));
-  if (avgRow) fragment.appendChild(avgRow);
-
-  // 清空并重置 tbody
-  while (tbody.firstChild) {
-    tbody.removeChild(tbody.firstChild);
   }
-  tbody.appendChild(fragment);
 }
 </script>
 

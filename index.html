@@ -1357,6 +1357,20 @@ function sortTable(n) {
 <!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
 
     <!-- End of Statcounter Code -->
+<script>
+  function showInfo(index) {
+    document.querySelectorAll('.sector').forEach(sector => sector.classList.remove('active'));
+    document.querySelectorAll('.info-box').forEach(box => box.style.opacity = '0');
+    const sector = document.querySelector(`.sector:nth-child(${index * 2 - 1})`);
+    sector.classList.add('active');
+    const infoBox = document.getElementById(`info${index}`);
+    infoBox.style.opacity = '1';
+  }
 
+  // Initialize: Show first info box
+  document.addEventListener('DOMContentLoaded', () => {
+    showInfo(1);
+  });
+</script>
   </body>
   </html>

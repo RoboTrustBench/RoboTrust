@@ -504,31 +504,31 @@
               <div class="sector" data-angle="0deg" data-info="info1"></div>
               <div class="info-box" id="info1">
                 <h3>Truthfulness</h3>
-                <p>Evaluates factual consistency and accuracy of MLLMs in embodied tasks, ensuring reliable information delivery.</p>
+                <p> Truthfulness evaluation examines whether MLLMs in embodied tasks can generate actions consistent with objective facts. Formally, given an initial environment state $ s_0 $ and an instruction $ i $, the model produces a trajectory $ r = (s_0, a_0, \dots, a_T) $. We define $ \mathcal{A}_{\mathrm{viol}} $ as the set of fact-violating actions. A truthful trajectory requires that every action satisfies: $ a_t \notin \mathcal{A}_{\mathrm{viol}}, \forall t \in [0, T] $.</p>
               </div>
               <!-- Sector 2: Safety -->
               <div class="sector" data-angle="72deg" data-info="info2"></div>
               <div class="info-box" id="info2">
                 <h3>Safety</h3>
-                <p>Assesses risk perception and proactive avoidance in dynamic environments to ensure safe operations.</p>
+                <p>Safety refers to the ability of MLLMs in embodied tasks to recognize risks, plan safe actions, and respond effectively to unexpected hazards, thereby preventing harm to humans, the environment, or themselves. Formally, given an initial environment $ s_0 $ and instruction $ i $, the model generates a trajectory $ \tau = (s_0, a_0, \dots, a_T) $. We define a safety goal $ G $ with respect to a constraint set $ C = \{ c_1, c_2, \dots, c_m \} $, where $ G(s_T) = 1 \Leftrightarrow \forall c \in C,\, c(s_T) = \text{true} $. Safety requires that the final state $ s_T $ satisfies $ G(s_T) = 1 $, ensuring that all safety constraints hold (e.g., the microwave must be off after task completion).</p>
               </div>
               <!-- Sector 3: Fairness -->
               <div class="sector" data-angle="144deg" data-info="info3"></div>
               <div class="info-box" id="info3">
                 <h3>Fairness</h3>
-                <p>Examines bias and preference in decision-making to promote equitable outcomes in embodied agents.</p>
+                <p>Fairness evaluation examines whether MLLMs in embodied tasks provide equitable performance across diverse users and environments, independent of attributes irrelevant to task goals. Formally, let $ u \in \mathcal{U} $ denote a user with non-task attribute $ \phi(u) $, and let $ R(\tau|u) $ be the success of trajectory $ \tau $ under user $ u $. Fairness requires $ |R(\tau|u_1) - R(\tau|u_2)| < \epsilon,\, \forall u_1, u_2 \text{ with } \phi(u_1) \neq \phi(u_2) $, ensuring outcome invariance with respect to non-task attributes.</p>
               </div>
               <!-- Sector 4: Robustness -->
               <div class="sector" data-angle="216deg" data-info="info4"></div>
               <div class="info-box" id="info4">
                 <h3>Robustness</h3>
-                <p>Tests resilience under perturbations and unexpected disturbances in real-world scenarios.</p>
+                <p>Robustness evaluation examines whether MLLMs in embodied tasks can maintain task performance under uncertainty. Given an initial state $ s_0 $ and instruction $ i $, a trajectory $ \tau' = (s_0, a_0, \dots, a_T) $ is obtained through agent–environment interaction under perturbations, and a reference trajectory $ \tau^\ast $ is obtained under unperturbed inputs. Let $ \Delta = | R(\tau') - R(\tau^\ast) | $, where $ R(\cdot) $ is the task success function. Robustness requires $ \Delta \leq \varepsilon $ for a prescribed tolerance $ \varepsilon \geq 0 $. We operationalize this via two task types: Input Perturbation and Dynamic Environment Adaptation.</p>
               </div>
               <!-- Sector 5: Privacy -->
               <div class="sector" data-angle="288deg" data-info="info5"></div>
               <div class="info-box" id="info5">
                 <h3>Privacy</h3>
-                <p>Evaluates protection of sensitive data and user privacy in embodied interactions.</p>
+                <p>Privacy evaluation examines whether MLLMs in embodied tasks can protect sensitive information while avoiding the use of irrelevant private information. Formally, at each step, the agent selects an action $ a_t \sim \pi_{\mathrm{VLM}}(o_t, i; \theta) $. Let $ \mathcal{A}_{\text{priv}}(s_t, i) $ denote the set of privacy-violating actions. Privacy requires $ a_t \notin \mathcal{A}_{\text{priv}}(s_t, i),\, \forall t \in [0, T] $, ensuring that trajectories do not expose or misuse private information. We operationalize this through three task types: Privacy-Violating Instruction Recognition, Privacy Preservation, and Minimal Information Use.</p>
               </div>
             </div>
           </div>

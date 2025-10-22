@@ -424,419 +424,266 @@
     </div>
   </div>
 </section>
- <!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Trustworthiness Carousel</title>
+ <section class="trust-carousel-pro">
   <style>
-    :root{
-      /* 轮播尺寸（自适应）：中间卡片宽度与高宽比 */
-      --slide-w: clamp(220px, 32vw, 440px);
+    .trust-carousel-pro{
+      /* 可调参数 */
+      --slide-w: clamp(260px, 36vw, 480px);
       --slide-h: calc(var(--slide-w) * 9/16);
-      --gap: clamp(12px, 2.4vw, 24px);
+      --gap: -88px;                             /* 负间距控制“半重叠” */
       --radius: 22px;
-      --shadow: 0 10px 25px rgba(0,0,0,.28);
-      --bezier: cubic-bezier(.22,.61,.36,1);
-      --speed: 680ms;
+      --bez: cubic-bezier(.22,.61,.36,1);
+      --speed: 700ms;
+      --shadow-strong: 0 14px 40px rgba(0,0,0,.55);
+      --shadow-soft:   0 10px 24px rgba(0,0,0,.32);
+      --persp: 900px;                           /* 透视越小立体越强 */
+      --tilt: 20deg;                            /* 左右卡片的旋转角度 */
+      --z-main: 90px;                           /* 中心卡片前景深度 */
+      --z-side: 40px;                           /* 两侧卡片前景深度 */
+      --label-color: #0e1628;                   /* 标签深色 */
+      background:#0f1115; color:#eaecef;
+      display:flex; flex-direction:column; align-items:center;
+      padding:min(6vh,64px) 0; isolation:isolate;
+    }
+    .trust-carousel-pro .title{font-weight:800;margin:0 0 8px;font-size:clamp(18px,2.2vw,28px);color:#f1f5ff}
+    .trust-carousel-pro .subtitle{opacity:.75;margin:0 0 26px}
+
+    .trust-carousel{
+      position:relative;
+      width:min(1120px,96vw);
+      overflow:hidden;                          /* 只显示视口内的卡片 */
+      perspective:var(--persp);
     }
 
-    *{ box-sizing: border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC",
-                   "Noto Sans CJK SC","Microsoft YaHei","Source Han Sans SC",sans-serif;
-      background: #0f1115;
-      color: #eaecef;
-    }
-
-    .page{
-      min-height:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: min(6vh,64px) 0;
-    }
-
-    .carousel{
-      position: relative;
-      width: min(1200px, 92vw);
-      margin: 0 auto;
-      padding: 0 clamp(24px, 9vw, 160px); /* 左右留白，制造两侧“露出” */
-      overflow: hidden;
-      isolation: isolate;
-    }
-
-    /* 渐隐边缘（两侧淡出，更像图片里那种效果） */
-    .carousel::before,
-    .carousel::after{
-      content:"";
-      position:absolute; top:0; bottom:0; width:14%;
-      pointer-events:none; z-index: 3;
-    }
-    .carousel::before{
-      left:0;
-      background: linear-gradient(90deg, #0f1115 0%, rgba(15,17,21,0.0) 100%);
-    }
-    .carousel::after{
-      right:0;
-      background: linear-gradient(270deg, #0f1115 0%, rgba(15,17,21,0.0) 100%);
-    }
-
-    .track{
-      display:flex;
-      align-items:center;
-      gap: var(--gap);
-      will-change: transform;
-      transition: transform var(--speed) var(--bezier);
-      touch-action: pan-y;
-      user-select: none;
-    }
+    .track{display:flex;align-items:center;gap:var(--gap);transition:transform var(--speed) var(--bez)}
 
     .slide{
-      flex: 0 0 var(--slide-w);
-      height: var(--slide-h);
-      border-radius: var(--radius);
-      overflow: hidden;
-      position: relative;
-      box-shadow: var(--shadow);
-      transform: scale(.86);
-      opacity: .65;
+      flex:0 0 var(--slide-w); min-width:var(--slide-w); height:var(--slide-h);
+      border-radius:var(--radius); overflow:hidden; position:relative; background:#111;
+      transform:scale(.78) translateZ(0);
+      opacity:0;                                /* 默认完全不可见 */
+      visibility:hidden;
+      pointer-events:none;
+      filter:saturate(.75) contrast(.95);
+      box-shadow:var(--shadow-soft);
       transition:
-        transform var(--speed) var(--bezier),
-        opacity   var(--speed) var(--bezier),
-        filter    var(--speed) var(--bezier);
-      background: #111;
-      cursor: pointer;
+        transform var(--speed) var(--bez),
+        opacity var(--speed) var(--bez),
+        filter var(--speed) var(--bez),
+        z-index var(--speed) var(--bez),
+        visibility 0s linear var(--speed);
+      z-index:1; cursor:pointer; will-change: transform;
     }
-
     .slide video{
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display:block;
+      width:100%; height:100%;
+      object-fit:contain;                       /* 关键：完整显示，不裁切 */
+      background:#000; display:block;
     }
 
-    /* 标题覆层 */
-    .label{
-      position: absolute;
-      left: 12px; right: 12px; bottom: 12px;
-      padding: 8px 12px;
-      border-radius: 14px;
-      font-weight: 600;
-      letter-spacing: .3px;
-      background: rgba(0,0,0,.35);
-      backdrop-filter: blur(4px);
-      line-height: 1;
-      text-align: center;
-    }
-
-    /* 当前居中卡片：放大、提亮 */
+    /* 中心卡片：居前、放大、清晰 */
     .slide.is-active{
-      transform: scale(1);
-      opacity: 1;
-      filter: saturate(1.05);
-      z-index: 2;
+      transform:translateZ(var(--z-main)) scale(1.10);
+      opacity:1; visibility:visible; pointer-events:auto;
+      filter:none; z-index:5; box-shadow:var(--shadow-strong);
+      transition:transform var(--speed) var(--bez), opacity var(--speed) var(--bez), filter var(--speed) var(--bez), z-index var(--speed) var(--bez), visibility 0s;
+    }
+    /* 左右相邻：更强的旋转与前景深度 */
+    .slide.is-prev{
+      transform:translateZ(var(--z-side)) scale(.9) rotateY(var(--tilt));
+      opacity:.85; visibility:visible; pointer-events:auto; z-index:3;
+      transition:transform var(--speed) var(--bez), opacity var(--speed) var(--bez), visibility 0s;
+    }
+    .slide.is-next{
+      transform:translateZ(var(--z-side)) scale(.9) rotateY(calc(var(--tilt) * -1));
+      opacity:.85; visibility:visible; pointer-events:auto; z-index:3;
+      transition:transform var(--speed) var(--bez), opacity var(--speed) var(--bez), visibility 0s;
     }
 
-    /* 左右切换按钮 */
+    /* 透明漂浮标签：深色文字 + 浅色发光，不遮挡画面 */
+    .label{
+      position:absolute; left:0; right:0; bottom:12px;
+      text-align:center; font-weight:800; letter-spacing:.3px;
+      color:var(--label-color);
+      text-shadow:0 2px 8px rgba(255,255,255,.55);
+      pointer-events:none; mix-blend-mode:multiply;
+    }
+
+    /* 导航与指示点（按钮放到容器内侧，避免被 overflow 裁掉） */
     .nav{
-      position: absolute;
-      top: 50%;
-      translate: 0 -50%;
-      z-index: 4;
-      width: 44px; height: 44px;
-      border-radius: 999px;
-      display: grid; place-items: center;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.18);
-      backdrop-filter: blur(6px);
-      color: #fff;
-      cursor: pointer;
-      transition: transform .2s var(--bezier), background .2s;
+      position:absolute; top:50%; translate:0 -50%; z-index:9;
+      width:44px; height:44px; border-radius:999px;
+      display:grid; place-items:center;
+      background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+      color:#fff; backdrop-filter:blur(6px);
+      cursor:pointer; transition:transform .2s,var(--speed)
     }
-    .nav:hover{ transform: translateY(-50%) scale(1.06); background: rgba(255,255,255,.14); }
-    .nav:active{ transform: translateY(-50%) scale(.98); }
-    .prev{ left: clamp(6px, 1.6vw, 16px); }
-    .next{ right: clamp(6px, 1.6vw, 16px); }
+    .nav:hover{transform:translateY(-50%) scale(1.1)}
+    .prev{left:8px} .next{right:8px}           /* 这里从 -4% 改到内侧 8px */
+    .nav svg{width:22px;height:22px}
 
-    .nav svg{ width: 22px; height: 22px; }
+    .dots{display:flex;gap:10px;justify-content:center;margin-top:20px}
+    .dot{width:8px;height:8px;border-radius:999px;background:#2c3642;cursor:pointer;transition:.25s}
+    .dot.is-on{background:#7aa2ff;width:22px}
 
-    /* 指示点 */
-    .dots{
-      display:flex; gap:10px; justify-content:center; margin-top: 18px;
-      filter: drop-shadow(0 3px 8px rgba(0,0,0,.35));
-    }
-    .dot{
-      width: 8px; height: 8px; border-radius: 999px; background:#2c3642; cursor:pointer;
-      transition: transform .25s var(--bezier), background .25s var(--bezier), width .25s var(--bezier);
-    }
-    .dot.is-on{ background:#7aa2ff; width: 22px; }
-
-    /* 顶部标题，可要可不要 */
-    .title{
-      text-align:center; font-weight:800; letter-spacing:.2px;
-      margin-bottom: 18px; font-size: clamp(18px, 2.2vw, 28px);
-      color:#f1f5ff;
-    }
-    .subtitle{
-      text-align:center; opacity:.72; margin-top:6px; margin-bottom:26px;
-      font-size: clamp(12px, 1.5vw, 14px);
-    }
-
-    /* 小屏：缩小按钮、减小留白 */
-    @media (max-width: 560px){
-      .carousel{ padding: 0 24px; }
-      .nav{ width: 38px; height: 38px; }
-      .nav svg{ width: 18px; height: 18px; }
-      .dots{ gap:8px; }
+    @media (max-width:560px){
+      .trust-carousel-pro{--gap:-56px}
+      .prev{left:4px} .next{right:4px}
     }
   </style>
-</head>
-<body>
-  <main class="page">
-    <div style="width:100%;">
-      <h1 class="title">TrustRobot Dimensions</h1>
-      <div class="subtitle">Truthfulness · Safety · Robustness · Privacy · Fairness</div>
 
-      <section class="carousel" id="carousel">
-        <button class="nav prev" aria-label="Previous">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="track" id="track">
-          <!-- JS 会注入 slides（包含首尾克隆，形成无缝轮播） -->
-        </div>
-        <button class="nav next" aria-label="Next">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </section>
+  <h1 class="title">TrustRobot Dimensions</h1>
+  <div class="subtitle">Truthfulness • Safety • Robustness • Privacy • Fairness</div>
 
-      <div class="dots" id="dots"></div>
-    </div>
-  </main>
+  <div class="trust-carousel" id="tr-carousel" aria-roledescription="carousel">
+    <button class="nav prev" aria-label="Previous">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="track" id="tr-track"></div>
+
+    <button class="nav next" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  <div class="dots" id="tr-dots" aria-label="Slide indicators"></div>
 
   <script>
-    // ====== 数据（你的视频路径与标签）======
+  (() => {
+    /* 1) 替换为你的实际视频路径 */
     const slidesData = [
-      { src: "static/videos/truthfulness.mp4", title: "Truthfulness" },
-      { src: "static/videos/safety.mp4",        title: "Safety" },
-      { src: "static/videos/robustness.mp4",    title: "Robustness" },
-      { src: "static/videos/privacy.mp4",       title: "Privacy" },
-      { src: "static/videos/fairness.mp4",      title: "Fairness" },
+      { src: "./truthfulness.mp4", title: "Truthfulness" },
+      { src: "./safety.mp4",        title: "Safety" },
+      { src: "./robustness.mp4",    title: "Robustness" },
+      { src: "./privacy.mp4",       title: "Privacy" },
+      { src: "./fairness.mp4",      title: "Fairness" },
     ];
 
-    // ====== 元素引用 ======
-    const track = document.getElementById('track');
-    const carousel = document.getElementById('carousel');
-    const dotsWrap = document.getElementById('dots');
-    const prevBtn = carousel.querySelector('.prev');
-    const nextBtn = carousel.querySelector('.next');
+    const track   = document.getElementById('tr-track');
+    const dotsBox = document.getElementById('tr-dots');
+    const prevBtn = document.querySelector('#tr-carousel .prev');
+    const nextBtn = document.querySelector('#tr-carousel .next');
+    const carousel= document.getElementById('tr-carousel');
 
-    // ====== 构建 slides（含首尾克隆）======
+    /* 2) 构建节点（含首尾克隆） */
     let slides = [];
-    function createSlide({src, title}, isClone=false, realIndex=null){
-      const wrap = document.createElement('div');
-      wrap.className = 'slide';
-      wrap.dataset.realIndex = realIndex ?? slides.length;
+    function makeSlide({src,title}, isClone=false, realIndex=null){
+      const el = document.createElement('div'); el.className='slide';
+      el.dataset.realIndex = realIndex ?? slides.length;
 
-      const video = document.createElement('video');
-      // iOS 自动播放需要 muted + playsinline
-      video.muted = true;
-      video.loop = true;
-      video.autoplay = false; // 由逻辑控制播放谁
-      video.playsInline = true;
-      video.preload = "metadata";
-      video.innerHTML = `<source src="${src}" type="video/mp4" />`;
+      const v = document.createElement('video');
+      v.controls = true;                        // 显示原生控制条
+      v.muted = false;                          // 正常有声
+      v.loop  = false;                          // 不循环（按时长播放）
+      v.autoplay = false;                       // 不自动播
+      v.playsInline = true;
+      v.preload = "metadata";
+      v.innerHTML = `<source src="${src}" type="video/mp4">`;
 
-      const label = document.createElement('div');
-      label.className = 'label';
-      label.textContent = title;
+      /* 播放结束后，自动切到下一张（仅当该视频是当前激活卡片） */
+      v.addEventListener('ended', ()=>{
+        if (el.classList.contains('is-active')) step(+1);
+      });
 
-      wrap.appendChild(video);
-      wrap.appendChild(label);
-      if(isClone) wrap.dataset.clone = "true";
-      return wrap;
+      const label = document.createElement('div'); label.className='label'; label.textContent=title;
+      el.append(v,label);
+      if(isClone) el.dataset.clone="true";
+      return el;
     }
 
-    // 真实 slides
-    slidesData.forEach((d,i)=> slides.push(createSlide(d,false,i)));
-    // 克隆（首尾）
-    const firstClone = createSlide(slidesData[0], true, 0);
-    const lastClone  = createSlide(slidesData[slidesData.length-1], true, slidesData.length-1);
+    slidesData.forEach((d,i)=> slides.push(makeSlide(d,false,i)));
+    const firstClone = makeSlide(slidesData[0], true, 0);
+    const lastClone  = makeSlide(slidesData[slidesData.length-1], true, slidesData.length-1);
+    track.append(lastClone, ...slides, firstClone);
 
-    // 挂载：顺序为 [lastClone, ...real, firstClone]
-    track.appendChild(lastClone);
-    slides.forEach(s=> track.appendChild(s));
-    track.appendChild(firstClone);
-
-    // 指示点
+    /* 3) 指示点 */
     const dots = slidesData.map((_,i)=>{
-      const dot=document.createElement('div');
-      dot.className='dot';
-      dot.role='button';
-      dot.ariaLabel=`Go to slide ${i+1}`;
-      dot.addEventListener('click', ()=> goTo(i+1)); // 因为有一个头部克隆，真实从 1 开始
-      dotsWrap.appendChild(dot);
-      return dot;
+      const d=document.createElement('div'); d.className='dot';
+      d.addEventListener('click', ()=> goTo(i+1));
+      dotsBox.append(d); return d;
     });
 
-    // ====== 布局计算 ======
-    function slideUnit(){
-      // 每个单元宽度 = 卡片宽度 + gap
-      const sample = track.children[0];
-      const style = window.getComputedStyle(sample);
-      const width = sample.getBoundingClientRect().width;
-      const gap = parseFloat(window.getComputedStyle(track).gap) || 0;
-      return width + gap;
-    }
+    /* 4) 状态：索引、尺寸、居中 */
+    let index = 1; // 1 对应第一张真实卡片
+    const gapPx = () => (parseFloat(getComputedStyle(track).gap) || 0);
+    const cardW = () => track.children[0].offsetWidth;
+    const unit  = () => cardW() + gapPx();
+    const centerOffset = () => (carousel.clientWidth - cardW()) / 2;
 
-    let index = 1; // 当前“轨道 index”，1 对应第一张真实卡片（0 是尾部克隆）
-    let unit = slideUnit();
-    function updateTransform(animate=true){
-      if(!animate){
-        track.style.transition = 'none';
-      }else{
-        track.style.transition = `transform var(--speed) var(--bezier)`;
-      }
-      track.style.transform = `translateX(${-(index)*unit}px)`;
-      requestAnimationFrame(()=>{
-        // 恢复动画设置，避免后续切换失效
-        if(!animate){
-          requestAnimationFrame(()=>{
-            track.style.transition = `transform var(--speed) var(--bezier)`;
-          });
-        }
+    function setClasses(){
+      /* 清空状态 */
+      [...track.children].forEach(el=>{
+        el.classList.remove('is-active','is-prev','is-next');
       });
-      updateActiveState();
-    }
+      /* 当前与左右邻居 */
+      const total = track.children.length;
+      const curr  = track.children[index];
+      const prev  = track.children[(index-1+total)%total];
+      const next  = track.children[(index+1)%total];
+      curr.classList.add('is-active');
+      prev.classList.add('is-prev');
+      next.classList.add('is-next');
 
-    function updateActiveState(){
-      // 高亮当前，播放当前视频，暂停其他视频
+      /* 离开当前时，暂停其它视频（不重置进度，保留用户操作） */
       [...track.children].forEach((el,i)=>{
-        el.classList.toggle('is-active', i === index);
-        const v = el.querySelector('video');
-        if(v){
-          if(i === index){
-            // 为了让浏览器在切换后稳定播放，稍微延迟启动
-            setTimeout(()=> { v.play().catch(()=>{}); }, 20);
-          }else{
-            v.pause(); v.currentTime = 0;
-          }
-        }
+        const v = el.querySelector('video'); if(!v) return;
+        if(i!==index){ v.pause(); }
       });
 
-      // 更新 dots
-      const real = realIndex();
-      dots.forEach((d,i)=> d.classList.toggle('is-on', i===real));
+      /* dots */
+      const r = realIndex();
+      dots.forEach((d,i)=> d.classList.toggle('is-on', i===r));
     }
 
     function realIndex(){
-      // 把当前轨道 index（含克隆）映射到真实 [0 ~ n-1]
-      let i = index-1;
-      if(i<0) i = slides.length-1;
-      if(i>=slides.length) i = 0;
-      return i;
+      let i = index-1; if(i<0) i = slides.length-1; if(i>=slides.length) i = 0; return i;
     }
 
-    // 初始化位置到第一张真实卡片
-    updateTransform(false);
+    function render(animate=true){
+      track.style.transition = animate ? `transform var(--speed) var(--bez)` : 'none';
+      const x = centerOffset() - index * unit();     // 居中当前卡片
+      track.style.transform  = `translateX(${x}px)`;
+      setClasses();
+    }
 
-    // ====== 无限循环首尾衔接（无缝）======
+    /* 首尾无缝 */
     track.addEventListener('transitionend', ()=>{
-      const total = track.children.length; // n + 2
+      const total = track.children.length;
       if(track.children[index].dataset.clone === "true"){
-        // 如果落在首尾克隆，瞬移到对应真实项
-        if(index === 0){ // 在头部的 lastClone
-          index = slides.length; // 对应真正的最后一张
-        }else if(index === total - 1){ // 在尾部的 firstClone
-          index = 1; // 回到真正第一张
-        }
-        updateTransform(false);
+        if(index===0) index = slides.length;
+        else if(index===total-1) index = 1;
+        render(false);
       }
     });
 
-    // ====== 交互：左右按钮 / 点按卡片 / 点击指示点 ======
-    prevBtn.addEventListener('click', ()=> step(-1));
-    nextBtn.addEventListener('click', ()=> step(+1));
+    /* 交互 */
+    function step(d){ index+=d; render(true); }
+    function goTo(r1){ index=r1; render(true); }
+    prevBtn.addEventListener('click', ()=>step(-1));
+    nextBtn.addEventListener('click', ()=>step(+1));
 
-    function step(delta){
-      index += delta;
-      updateTransform(true);
-    }
-    function goTo(real1Based){
-      index = real1Based; // 1..n
-      updateTransform(true);
-    }
-
-    // 点击某一张卡片 -> 跳到该张
+    /* 点击任意卡片，直接居中（不强制播放） */
     [...track.children].forEach((el,i)=>{
-      el.addEventListener('click', ()=>{
-        index = i;
-        updateTransform(true);
+      el.addEventListener('click', (e)=>{
+        // 避免点击 video 控件触发切换
+        if(e.target.tagName.toLowerCase()==='video' || e.target.closest('button')) return;
+        index = i; render(true);
       });
     });
 
-    // ====== 自动轮播（悬停暂停 / 触摸拖拽也暂停）======
-    let timerId = null;
-    const AUTO_MS = 4200;
-    function startAuto(){ stopAuto(); timerId = setInterval(()=> step(+1), AUTO_MS); }
-    function stopAuto(){ if(timerId){ clearInterval(timerId); timerId=null; } }
+    /* 取消固定时长自动轮播——由视频 ended 决定是否切换 */
+    // 如需恢复固定自动轮播，可在此加一个 setInterval(step, X)
 
-    carousel.addEventListener('mouseenter', stopAuto);
-    carousel.addEventListener('mouseleave', startAuto);
-    startAuto();
+    /* 初始渲染 */
+    render(false);
 
-    // ====== 拖拽/滑动（桌面+移动）======
-    let dragging=false, startX=0, startTx=0, lastDx=0;
-    function onDown(e){
-      dragging=true; stopAuto();
-      startX = (e.touches ? e.touches[0].clientX : e.clientX);
-      startTx = -index * unit;
-      track.style.transition = 'none';
-    }
-    function onMove(e){
-      if(!dragging) return;
-      const x = (e.touches ? e.touches[0].clientX : e.clientX);
-      const dx = x - startX;
-      lastDx = dx;
-      track.style.transform = `translateX(${startTx + dx}px)`;
-    }
-    function onUp(){
-      if(!dragging) return;
-      dragging=false;
-      // 根据拖动距离决定是否翻页
-      const threshold = unit * 0.22;
-      if(lastDx > threshold) step(-1);
-      else if(lastDx < -threshold) step(+1);
-      else updateTransform(true);
-      startAuto();
-    }
-
-    track.addEventListener('mousedown', onDown);
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-
-    track.addEventListener('touchstart', onDown, {passive:true});
-    track.addEventListener('touchmove', onMove, {passive:true});
-    track.addEventListener('touchend', onUp);
-
-    // ====== 自适应重排（窗口缩放时重算单元宽度）======
-    let resizeTimer=null;
-    window.addEventListener('resize', ()=>{
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(()=>{
-        unit = slideUnit();
-        updateTransform(false);
-      }, 100);
+    /* 自适应：窗口变化后保持中心对齐 */
+    let rz=null; window.addEventListener('resize', ()=>{
+      clearTimeout(rz); rz=setTimeout(()=>render(false), 100);
     });
-
-    // 初次进来：让第一张真实卡片播放
-    updateActiveState();
+  })();
   </script>
-</body>
-</html>
+</section>
+
    
 
 <!-- Image carousel -->

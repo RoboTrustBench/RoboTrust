@@ -461,7 +461,6 @@
       background: linear-gradient(90deg, var(--grad-color1), var(--grad-color2));
     }
 
-    /* 主体背景框 */
     .trust-carousel {
       position: relative;
       width: min(1200px, 96vw);
@@ -476,16 +475,16 @@
       padding: 40px 0;
     }
 
-    /* 外层容器：标签不受 overflow 限制 */
+    /* 顶部标签层 */
     .tag-layer {
       position: absolute;
-      top: 0;
+      top: 10px;
       left: 0;
       width: 100%;
       display: flex;
       justify-content: center;
       pointer-events: none;
-      z-index: 99;
+      z-index: 9;
     }
 
     .dynamic-tag {
@@ -498,9 +497,10 @@
       font-size: 17px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
       opacity: 0;
-      transform: translateY(-20px);
-      transition: all 0.5s ease;
+      transform: translateY(-8px);
+      transition: opacity .35s ease, transform .35s ease, background .35s ease;
     }
+
     .dynamic-tag.show {
       opacity: 1;
       transform: translateY(0);
@@ -585,6 +585,7 @@
     .prev {
       left: 8px;
     }
+
     .next {
       right: 8px;
     }
@@ -618,10 +619,11 @@
 
   <h1 class="title">Evaluation Demo</h1>
 
-  <!-- 标签层（独立显示） -->
-  <div class="tag-layer"><div class="dynamic-tag" id="global-tag"></div></div>
-
   <div class="trust-carousel" id="tr-carousel">
+    <div class="tag-layer">
+      <div class="dynamic-tag" id="global-tag"></div>
+    </div>
+
     <button class="nav prev" aria-label="Previous">
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -667,6 +669,7 @@
       const globalTag = document.getElementById("global-tag");
 
       let slides = [];
+
       function makeSlide({ src, title }, isClone = false, realIndex = null) {
         const el = document.createElement("div");
         el.className = "slide";
@@ -700,6 +703,7 @@
       });
 
       let index = 1;
+
       const gapPx = () => parseFloat(getComputedStyle(track).gap) || 0;
       const cardW = () => track.children[0].offsetWidth;
       const unit = () => cardW() + gapPx();

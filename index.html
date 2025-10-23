@@ -427,57 +427,49 @@
  <section class="trust-carousel-pro">
   <style>
     .trust-carousel-pro{
-      --slide-w: clamp(260px, 36vw, 480px);
+      --slide-w: clamp(260px, 36vw, 500px);
       --slide-h: calc(var(--slide-w) * 9/16);
-      --gap: -88px;
-      --radius: 22px;
+      --gap: -120px; /* 负值让两侧视频部分重叠可见 */
+      --radius: 18px;
       --bez: cubic-bezier(.22,.61,.36,1);
       --speed: 700ms;
-      --shadow-strong: 0 14px 40px rgba(0,0,0,.25);
-      --shadow-soft: 0 10px 24px rgba(0,0,0,.12);
-      --persp: 900px;
-      --tilt: 20deg;
-      --z-main: 90px;
+      --persp: 1000px;
+      --tilt: 15deg;
+      --z-main: 80px;
       --z-side: 40px;
-      --grad-color1: #ff7b7b;
-      --grad-color2: #a26bff;
       background:#fff; color:#111;
       display:flex; flex-direction:column; align-items:center;
       padding:min(6vh,64px) 0; isolation:isolate;
     }
 
-    /* 标题样式 */
-    .trust-carousel-pro .title{
+    .title{
       font-weight:900;
       font-size:clamp(24px,2.5vw,36px);
       color:#222;
       position:relative;
       margin-bottom:40px;
     }
-    .trust-carousel-pro .title::after{
+    .title::after{
       content:"";
       position:absolute;
-      left:50%;
-      transform:translateX(-50%);
+      left:50%; transform:translateX(-50%);
       bottom:-10px;
-      width:60px; height:4px;
-      border-radius:4px;
-      background:linear-gradient(90deg,var(--grad-color1),var(--grad-color2));
-      transition:background .6s ease;
+      width:60px; height:4px; border-radius:4px;
+      background:linear-gradient(90deg,#4e79ff,#7ec8ff);
     }
 
     .trust-carousel{
       position:relative;
-      width:min(1120px,96vw);
+      width:min(1200px,96vw);
       overflow:hidden;
       perspective:var(--persp);
       background:radial-gradient(circle at center,
         rgba(255,255,255,0.96) 0%,
-        rgba(245,245,245,0.92) 45%,
-        rgba(230,230,230,0.88) 100%);
+        rgba(245,245,245,0.9) 50%,
+        rgba(235,235,235,0.85) 100%);
       border-radius:40px;
-      box-shadow:inset 0 0 80px rgba(0,0,0,0.04);
-      padding:30px 0;
+      box-shadow:inset 0 0 60px rgba(0,0,0,0.05);
+      padding:40px 0;
     }
 
     .track{
@@ -487,107 +479,70 @@
 
     .slide{
       flex:0 0 var(--slide-w);
-      min-width:var(--slide-w);
       height:var(--slide-h);
       border-radius:var(--radius);
       overflow:hidden;
       position:relative;
-      transform:scale(.78) translateZ(0);
-      opacity:0; visibility:hidden; pointer-events:none;
-      box-shadow:var(--shadow-soft);
+      transform:scale(.8);
+      opacity:0; visibility:hidden;
       transition:all var(--speed) var(--bez);
-      z-index:1; cursor:pointer;
+      z-index:1;
+      cursor:pointer;
     }
 
     .slide video{
-      width:100%;
-      height:100%;
-      object-fit:cover;  /* ✅ 去掉黑框 */
+      width:100%; height:100%;
+      object-fit:contain;  /* ✅ 确保视频完整显示 */
       background:#000;
-      display:block;
       border-radius:inherit;
-      transition:transform .6s ease, filter .6s ease, opacity .6s ease;
+      display:block;
     }
 
-    /* ✅ 主视频浮起聚焦效果 */
+    /* 中心视频突出显示 */
     .slide.is-active{
-      transform:translateZ(var(--z-main)) scale(1.12);
-      opacity:1; visibility:visible; pointer-events:auto;
-      filter:none; z-index:5;
-      box-shadow:0 0 45px rgba(0,0,0,0.35),
-                  0 0 80px rgba(255,255,255,0.05) inset;
-    }
-    .slide.is-active video{
-      filter:brightness(1.08) contrast(1.05) saturate(1.1);
+      transform:scale(1) translateZ(var(--z-main));
+      opacity:1; visibility:visible; z-index:5;
+      box-shadow:0 8px 35px rgba(0,0,0,0.25);
     }
 
-    /* ✅ 两侧视频轻模糊变暗 */
-    .slide.is-prev video,
-    .slide.is-next video{
-      filter:blur(2px) brightness(0.82) saturate(0.9);
-      transform:scale(0.97);
+    /* 左右视频略小、侧转一点形成层次 */
+    .slide.is-prev{
+      transform:scale(0.82) rotateY(var(--tilt)) translateZ(var(--z-side));
+      opacity:.85; visibility:visible; z-index:3;
+      filter:brightness(0.85) saturate(0.9);
+    }
+    .slide.is-next{
+      transform:scale(0.82) rotateY(calc(var(--tilt)*-1)) translateZ(var(--z-side));
+      opacity:.85; visibility:visible; z-index:3;
+      filter:brightness(0.85) saturate(0.9);
     }
 
-    /* ✅ 鼠标悬停主视频时微缩放 */
+    /* 悬停轻放大 */
     .slide.is-active:hover video{
       transform:scale(1.04);
       transition:transform 1s ease;
     }
 
-    /* 动态播放标签 */
-    .dynamic-tag{
-      position:absolute;
-      top:-58px; left:50%;
-      transform:translateX(-50%) scale(.9);
-      background:rgba(0,0,0,.7);
-      color:#fff;
-      padding:6px 20px;
-      border-radius:14px;
-      font-weight:700;
-      letter-spacing:.3px;
-      opacity:0;
-      pointer-events:none;
-      transition:all .5s ease;
-    }
-    .dynamic-tag.show{
-      opacity:1;
-      transform:translateX(-50%) scale(1);
-    }
-
-    .active-dimension{
-      font-weight:700;
-      font-size:clamp(16px,1.8vw,20px);
-      color:var(--grad-color1);
-      margin-bottom:16px;
-      min-height:28px;
-      opacity:0;
-      transition:opacity .5s ease, transform .5s ease;
-      transform:translateY(-10px);
-    }
-    .active-dimension.show{
-      opacity:1;
-      transform:translateY(0);
-    }
-
-    /* 导航与圆点 */
+    /* 导航按钮 */
     .nav{
-      position:absolute; top:50%; translate:0 -50%; z-index:9;
-      width:44px; height:44px; border-radius:999px;
+      position:absolute; top:50%; translate:0 -50%;
+      z-index:9; width:44px; height:44px; border-radius:50%;
       display:grid; place-items:center;
-      background:rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.1);
-      color:#222; backdrop-filter:blur(6px);
-      cursor:pointer; transition:transform .2s;
+      background:rgba(0,0,0,.05); border:1px solid rgba(0,0,0,.1);
+      cursor:pointer; color:#222;
+      transition:transform .2s;
     }
-    .nav:hover{transform:translateY(-50%) scale(1.1)}
-    .prev{left:8px} .next{right:8px}
-    .nav svg{width:22px;height:22px}
-    .dots{display:flex;gap:10px;justify-content:center;margin-top:20px}
-    .dot{width:8px;height:8px;border-radius:999px;background:#d2d8e1;cursor:pointer;transition:.25s}
-    .dot.is-on{background:#3b82f6;width:22px}
+    .nav:hover{transform:translateY(-50%) scale(1.1);}
+    .prev{left:8px;} .next{right:8px;}
+    .nav svg{width:22px;height:22px;}
+
+    /* 指示点 */
+    .dots{display:flex;gap:10px;justify-content:center;margin-top:20px;}
+    .dot{width:8px;height:8px;border-radius:50%;background:#ccc;cursor:pointer;transition:.25s;}
+    .dot.is-on{background:#4e79ff;width:22px;}
   </style>
 
   <h1 class="title">Evaluation Demo</h1>
-  <div class="active-dimension" id="active-dimension"></div>
 
   <div class="trust-carousel" id="tr-carousel">
     <button class="nav prev" aria-label="Previous">
@@ -600,24 +555,17 @@
       <svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
   </div>
+
   <div class="dots" id="tr-dots"></div>
 
   <script>
   (() => {
-    const themeMap = {
-      "Truthfulness": ["#4e79ff", "#7ec8ff"],
-      "Safety": ["#e94b4b", "#ff8a65"],
-      "Robustness": ["#27ae60", "#a8e063"],
-      "Privacy": ["#9b59b6", "#d09cff"],
-      "Fairness": ["#f39c12", "#ffd56b"],
-    };
-
     const slidesData = [
-      { src: "static/videos/truthfulness.mp4", title: "Truthfulness" },
-      { src: "static/videos/safety.mp4",        title: "Safety" },
-      { src: "static/videos/robustness.mp4",    title: "Robustness" },
-      { src: "static/videos/privacy.mp4",       title: "Privacy" },
-      { src: "static/videos/fairness.mp4",      title: "Fairness" },
+      { src: "static/videos/truthfulness.mp4" },
+      { src: "static/videos/safety.mp4" },
+      { src: "static/videos/robustness.mp4" },
+      { src: "static/videos/privacy.mp4" },
+      { src: "static/videos/fairness.mp4" },
     ];
 
     const track = document.getElementById('tr-track');
@@ -625,11 +573,9 @@
     const prevBtn = document.querySelector('#tr-carousel .prev');
     const nextBtn = document.querySelector('#tr-carousel .next');
     const carousel = document.getElementById('tr-carousel');
-    const activeTag = document.getElementById('active-dimension');
-    const root = document.querySelector('.trust-carousel-pro');
 
     let slides = [];
-    function makeSlide({src,title},isClone=false,realIndex=null){
+    function makeSlide({src},isClone=false,realIndex=null){
       const el=document.createElement('div'); el.className='slide';
       el.dataset.realIndex=realIndex??slides.length;
       const v=document.createElement('video');
@@ -670,7 +616,7 @@
         if(!v) return;
         if(i===index){
           v.play().catch(()=>{});
-          v.onended = () => { step(1); };  // ✅ 播放完自动切换
+          v.onended = () => { step(1); };
         } else {
           v.pause(); v.onended=null;
         }
@@ -697,7 +643,6 @@
     function goTo(r1){index=r1;render(true);}
     prevBtn.addEventListener('click',()=>step(-1));
     nextBtn.addEventListener('click',()=>step(+1));
-
     [...track.children].forEach((el,i)=>{
       el.addEventListener('click',(e)=>{
         if(e.target.tagName.toLowerCase()==='video'||e.target.closest('button'))return;
@@ -712,29 +657,6 @@
 
     let rz=null;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>render(false),100);});
     render(false);
-
-    slidesData.forEach((data,i)=>{
-      const slide=track.children[i+1];
-      const tag=document.createElement('div');
-      tag.className='dynamic-tag';
-      tag.textContent=data.title;
-      slide.append(tag);
-      const v=slide.querySelector('video');
-      v.addEventListener('play',()=>{
-        tag.classList.add('show');
-        activeTag.textContent=data.title;
-        activeTag.classList.add('show');
-        const [c1,c2]=themeMap[data.title];
-        root.style.setProperty('--grad-color1',c1);
-        root.style.setProperty('--grad-color2',c2);
-      });
-      const hideTag=()=>{
-        tag.classList.remove('show');
-        activeTag.classList.remove('show');
-      };
-      v.addEventListener('pause',hideTag);
-      v.addEventListener('ended',hideTag);
-    });
   })();
   </script>
 </section>  

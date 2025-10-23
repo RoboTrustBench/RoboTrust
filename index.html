@@ -426,7 +426,7 @@
 </section>
  <section class="trust-carousel-pro">
   <style>
-    .trust-carousel-pro {
+    .trust-carousel-pro{
       --slide-w: clamp(260px, 36vw, 500px);
       --slide-h: calc(var(--slide-w) * 9/16);
       --gap: -120px;
@@ -434,149 +434,97 @@
       --speed: 700ms;
       --grad-color1: #4e79ff;
       --grad-color2: #7ec8ff;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: min(6vh, 64px) 0;
+      background:#fff; display:flex; flex-direction:column; align-items:center;
+      padding:min(6vh,64px) 0;
     }
 
-    .title {
-      font-weight: 900;
-      font-size: clamp(26px, 2.6vw, 38px);
-      color: #222;
-      position: relative;
-      margin-bottom: 60px;
+    .title{
+      font-weight:900; font-size:clamp(26px,2.6vw,38px); color:#222;
+      position:relative; margin-bottom:60px;
     }
-    .title::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: -10px;
-      width: 70px;
-      height: 4px;
-      border-radius: 4px;
-      background: linear-gradient(90deg, var(--grad-color1), var(--grad-color2));
+    .title::after{
+      content:""; position:absolute; left:50%; transform:translateX(-50%);
+      bottom:-10px; width:70px; height:4px; border-radius:4px;
+      background:linear-gradient(90deg,var(--grad-color1),var(--grad-color2));
     }
 
-    /* 背景框顶部为标签预留空间 */
-    .trust-carousel {
-      position: relative;
-      width: min(1200px, 96vw);
-      overflow: hidden;
-      background: radial-gradient(circle at center,
-        rgba(255, 255, 255, 0.98) 0%,
-        rgba(245, 245, 245, 0.95) 45%,
-        rgba(230, 230, 230, 0.9) 100%);
-      border-radius: 40px;
-      box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.05);
-      padding: 70px 0 40px;
+    .trust-carousel{
+      position:relative; width:min(1200px,96vw); overflow:hidden;
+      background:radial-gradient(circle at center,
+        rgba(255,255,255,.98) 0%,
+        rgba(245,245,245,.95) 45%,
+        rgba(230,230,230,.9) 100%);
+      border-radius:40px; box-shadow:inset 0 0 80px rgba(0,0,0,.05);
+      padding:70px 0 40px; /* 为标签预留顶部空间 */
     }
 
-    /* 顶部标签层（固定在框内） */
-    .tag-layer {
-      position: absolute;
-      top: 12px;
-      left: 0;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      pointer-events: none;
-      z-index: 9;
+    .tag-layer{
+      position:absolute; top:12px; left:0; width:100%;
+      display:flex; justify-content:center; pointer-events:none; z-index:9;
     }
-    .dynamic-tag {
-      background: linear-gradient(90deg, var(--grad-color1), var(--grad-color2));
-      color: #fff;
-      padding: 8px 28px;
-      border-radius: 20px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      font-size: 17px;
-      box-shadow: 0 0 10px rgba(0,0,0,.25);
-      opacity: 0;
-      transform: translateY(-8px);
-      transition: opacity .35s ease, transform .35s ease, background .35s ease;
+    .dynamic-tag{
+      background:linear-gradient(90deg,var(--grad-color1),var(--grad-color2));
+      color:#fff; padding:8px 28px; border-radius:20px; font-weight:700;
+      letter-spacing:.3px; font-size:17px; box-shadow:0 0 10px rgba(0,0,0,.25);
+      opacity:0; transform:translateY(-8px);
+      transition:opacity .35s, transform .35s, background .35s;
     }
-    .dynamic-tag.show { opacity: 1; transform: translateY(0); }
+    .dynamic-tag.show{opacity:1; transform:translateY(0);}
 
-    .track {
-      display: flex;
-      align-items: center;
-      gap: var(--gap);
-      transition: transform var(--speed) cubic-bezier(.22,.61,.36,1);
+    .track{
+      display:flex; align-items:center; gap:var(--gap);
+      transition:transform var(--speed) cubic-bezier(.22,.61,.36,1);
+      will-change:transform; transform:translateZ(0);
     }
 
-    /* —— 卡片与视频：完整显示 + 白底 —— */
-    .slide {
-      flex: 0 0 var(--slide-w);
-      height: var(--slide-h);
-      border-radius: var(--radius);
-      position: relative;
-      transform: scale(.8);
-      opacity: 0;
-      visibility: hidden;
-      transition: all var(--speed) ease;
-      z-index: 1;
-      cursor: pointer;
-      background: #fff;          /* contain 留白为白色 */
-      overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0,0,0,.12);
-      border: 1px solid rgba(0,0,0,0.05);  /* ✅ 超浅描边，盖住发丝缝 */
-      background-clip: padding-box;
-    }
-    .slide video {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;       /* 保证画面完整 */
-      border-radius: inherit;
-      display: block;
-      background: #fff;          /* 浏览器控件区/空白也是白色 */
-    }
-    /* 尽量把浏览器控件背景变透明（Chromium/WebKit 有效） */
-    .slide video::-webkit-media-controls-enclosure { background-color: transparent !important; }
-    .slide video::-webkit-media-controls-panel      { background-color: transparent !important; }
+    .slide, .slide *{ box-sizing:border-box; backface-visibility:hidden; transform-style:preserve-3d; }
 
-    .slide.is-active {
-      transform: scale(1);
-      opacity: 1;
-      visibility: visible;
-      z-index: 5;
-    }
-    .slide.is-prev {
-      transform: scale(.85) rotateY(15deg);
-      opacity: .9; visibility: visible; z-index: 3;
-      outline: 1px solid rgba(0,0,0,0.04);     /* ✅ 旋转态再补一层浅 outline */
-      outline-offset: -1px;
-    }
-    .slide.is-next {
-      transform: scale(.85) rotateY(-15deg);
-      opacity: .9; visibility: visible; z-index: 3;
-      outline: 1px solid rgba(0,0,0,0.04);
-      outline-offset: -1px;
+    .slide{
+      flex:0 0 var(--slide-w); height:var(--slide-h);
+      border-radius:var(--radius); position:relative;
+      transform:scale(.8); opacity:0; visibility:hidden;
+      transition:all var(--speed) ease; z-index:1; cursor:pointer;
+      background:#fff; overflow:hidden;
+      box-shadow:0 10px 25px rgba(0,0,0,.12);
+      border:1px solid rgba(0,0,0,.05); background-clip:padding-box;
     }
 
-    .nav {
-      position: absolute; top: 50%; translate: 0 -50%;
-      z-index: 8; width: 44px; height: 44px; border-radius: 50%;
-      display: grid; place-items: center;
-      background: rgba(0,0,0,.05); border: 1px solid rgba(0,0,0,.1);
-      color:#222; cursor:pointer; transition: transform .2s;
+    /* 视频白色包裹容器：遮盖任何发丝缝 */
+    .media{
+      position:relative; width:100%; height:100%;
+      border-radius:inherit; background:#fff; overflow:hidden;
+      will-change:transform; transform:translateZ(0);
     }
-    .nav:hover { transform: translateY(-50%) scale(1.1); }
-    .prev { left: 8px; } .next { right: 8px; }
-    .nav svg { width: 22px; height: 22px; }
-
-    .dots { display:flex; gap:10px; justify-content:center; margin-top:22px; }
-    .dot { width:8px; height:8px; border-radius:50%; background:#ccc; cursor:pointer; transition:.25s; }
-    .dot.is-on { background: var(--grad-color1); width:22px; }
-
-    /* ✅ 抗“黑线/发丝缝”补丁：强制 GPU 合成 & 隐藏背面 */
-    .track{ will-change: transform; transform: translateZ(0); }
-    .slide, .slide *{
-      backface-visibility: hidden;
-      transform-style: preserve-3d;
+    .media::after{
+      content:""; position:absolute; inset:0; border-radius:inherit;
+      box-shadow:0 0 0 1px #fff inset; pointer-events:none; /* 关键白色内描边 */
     }
+
+    .media > video{
+      width:100%; height:100%; display:block;
+      object-fit:contain; background:#fff; border:0;
+      transform:translateZ(0.001px);
+    }
+    .media > video::-webkit-media-controls-enclosure{ background-color:transparent !important; }
+    .media > video::-webkit-media-controls-panel{ background-color:transparent !important; }
+
+    .slide.is-active{ transform:scale(1); opacity:1; visibility:visible; z-index:5; }
+    .slide.is-prev{  transform:scale(.85) rotateY(15deg);  opacity:.9; visibility:visible; z-index:3; outline:1px solid rgba(0,0,0,.04); outline-offset:-1px; }
+    .slide.is-next{  transform:scale(.85) rotateY(-15deg); opacity:.9; visibility:visible; z-index:3; outline:1px solid rgba(0,0,0,.04); outline-offset:-1px; }
+
+    .nav{
+      position:absolute; top:50%; translate:0 -50%; z-index:8;
+      width:44px; height:44px; border-radius:50%;
+      display:grid; place-items:center; background:rgba(0,0,0,.05);
+      border:1px solid rgba(0,0,0,.1); color:#222; cursor:pointer; transition:transform .2s;
+    }
+    .nav:hover{ transform:translateY(-50%) scale(1.1); }
+    .prev{ left:8px; } .next{ right:8px; }
+    .nav svg{ width:22px; height:22px; }
+
+    .dots{ display:flex; gap:10px; justify-content:center; margin-top:22px; }
+    .dot{ width:8px; height:8px; border-radius:50%; background:#ccc; cursor:pointer; transition:.25s; }
+    .dot.is-on{ background:var(--grad-color1); width:22px; }
   </style>
 
   <h1 class="title">Evaluation Demo</h1>
@@ -628,13 +576,17 @@
       el.className = "slide";
       el.dataset.realIndex = realIndex ?? slides.length;
 
+      const wrap = document.createElement("div");  // 白色包裹容器
+      wrap.className = "media";
+
       const v = document.createElement("video");
-      v.controls = false;           // 初始不显示控件（仅中间显示）
+      v.controls = false;           // 仅中间卡片显示控件
       v.muted = true; v.loop = false; v.autoplay = false;
       v.playsInline = true; v.preload = "metadata";
       v.innerHTML = `<source src="${src}" type="video/mp4">`;
 
-      el.append(v);
+      wrap.append(v);
+      el.append(wrap);
       if (isClone) el.dataset.clone = "true";
       return el;
     }
@@ -669,7 +621,7 @@
         const v = el.querySelector("video");
         if(!v) return;
 
-        // ✅ 只有中心卡片显示控件，侧边隐藏，避免控件深色条像“黑边”
+        // 只在中心卡片显示控件，侧边隐藏，避免控件深色条像“黑边”
         v.controls = (i === index);
 
         if(i === index){

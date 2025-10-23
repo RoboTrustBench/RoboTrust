@@ -426,7 +426,7 @@
 </section>
  <section class="trust-carousel-pro">
   <style>
-    .trust-carousel-pro{
+    .trust-carousel-pro {
       --slide-w: clamp(260px, 36vw, 500px);
       --slide-h: calc(var(--slide-w) * 9/16);
       --gap: -120px;
@@ -436,161 +436,184 @@
       --tilt: 15deg;
       --z-main: 90px;
       --z-side: 40px;
-      background:#fff;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:min(6vh,64px) 0;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: min(6vh, 64px) 0;
     }
 
-    .title{
-      font-weight:900;
-      font-size:clamp(26px,2.6vw,38px);
-      color:#222;
-      position:relative;
-      margin-bottom:45px;
-    }
-    .title::after{
-      content:"";
-      position:absolute;
-      left:50%;
-      transform:translateX(-50%);
-      bottom:-10px;
-      width:70px;
-      height:4px;
-      border-radius:4px;
-      background:linear-gradient(90deg,#4e79ff,#7ec8ff);
+    .title {
+      font-weight: 900;
+      font-size: clamp(26px, 2.6vw, 38px);
+      color: #222;
+      position: relative;
+      margin-bottom: 45px;
     }
 
-    .trust-carousel{
-      position:relative;
-      width:min(1200px,96vw);
-      overflow:visible; /* ✅ 改为 visible 允许标签超出 */
-      perspective:var(--persp);
-      background:radial-gradient(circle at center,
-        rgba(255,255,255,0.98) 0%,
-        rgba(245,245,245,0.95) 45%,
-        rgba(230,230,230,0.9) 100%);
-      border-radius:40px;
-      box-shadow:inset 0 0 80px rgba(0,0,0,0.05);
-      padding:40px 0;
+    .title::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -10px;
+      width: 70px;
+      height: 4px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #4e79ff, #7ec8ff);
     }
 
-    .track{
-      display:flex;
-      align-items:center;
-      gap:var(--gap);
-      transition:transform var(--speed) cubic-bezier(.22,.61,.36,1);
+    .trust-carousel {
+      position: relative;
+      width: min(1200px, 96vw);
+      overflow: visible;
+      perspective: var(--persp);
+      background: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 0.98) 0%,
+        rgba(245, 245, 245, 0.95) 45%,
+        rgba(230, 230, 230, 0.9) 100%
+      );
+      border-radius: 40px;
+      box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.05);
+      padding: 40px 0;
     }
 
-    .slide{
-      flex:0 0 var(--slide-w);
-      height:var(--slide-h);
-      border-radius:var(--radius);
-      position:relative;
-      transform:scale(.8);
-      opacity:0;
-      visibility:hidden;
-      transition:all var(--speed) ease;
-      z-index:1;
-      cursor:pointer;
+    .track {
+      display: flex;
+      align-items: center;
+      gap: var(--gap);
+      transition: transform var(--speed) cubic-bezier(0.22, 0.61, 0.36, 1);
     }
 
-    .video-wrapper{
-      position:relative;
-      width:100%; height:100%;
-      border-radius:inherit;
-      overflow:hidden;
-      background:#000;
+    .slide {
+      flex: 0 0 var(--slide-w);
+      height: var(--slide-h);
+      border-radius: var(--radius);
+      position: relative;
+      transform: scale(0.8);
+      opacity: 0;
+      visibility: hidden;
+      transition: all var(--speed) ease;
+      z-index: 1;
+      cursor: pointer;
+      background: #000;
     }
 
-    .slide video{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      transition:filter .6s ease, transform .6s ease;
+    .slide video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      display: block;
+      transition: filter 0.6s ease, transform 0.6s ease;
     }
 
-    /* 标签 */
-    .dynamic-tag{
-      position:absolute;
-      top:-48px;
-      left:50%;
-      transform:translateX(-50%) scale(0.9);
-      background:rgba(0,0,0,.75);
-      color:#fff;
-      padding:6px 22px;
-      border-radius:16px;
-      font-weight:700;
-      letter-spacing:.3px;
-      opacity:0;
-      transition:all .5s ease;
-      pointer-events:none;
-      white-space:nowrap;
-    }
-    .dynamic-tag.show{
-      opacity:1;
-      transform:translateX(-50%) scale(1);
+    /* 标签：移出 video，直接挂在 .slide 上 */
+    .dynamic-tag {
+      position: absolute;
+      top: -45px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.9);
+      background: rgba(0, 0, 0, 0.75);
+      color: #fff;
+      padding: 6px 22px;
+      border-radius: 16px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      opacity: 0;
+      transition: all 0.5s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 10;
     }
 
-    /* 主视频 */
-    .slide.is-active{
-      transform:scale(1) translateZ(var(--z-main));
-      opacity:1; visibility:visible; z-index:5;
-      box-shadow:0 8px 35px rgba(0,0,0,0.25);
-    }
-    .slide.is-active video{
-      filter:brightness(1.05) contrast(1.05) saturate(1.1);
+    .dynamic-tag.show {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
     }
 
-    /* 左右视频 */
-    .slide.is-prev{
-      transform:scale(0.82) rotateY(var(--tilt)) translateZ(var(--z-side));
-      opacity:.85; visibility:visible; z-index:3;
-      filter:brightness(0.8);
-    }
-    .slide.is-next{
-      transform:scale(0.82) rotateY(calc(var(--tilt)*-1)) translateZ(var(--z-side));
-      opacity:.85; visibility:visible; z-index:3;
-      filter:brightness(0.8);
+    .slide.is-active {
+      transform: scale(1) translateZ(var(--z-main));
+      opacity: 1;
+      visibility: visible;
+      z-index: 5;
+      box-shadow: 0 8px 35px rgba(0, 0, 0, 0.25);
     }
 
-    .nav{
-      position:absolute;
-      top:50%;
-      translate:0 -50%;
-      z-index:9;
-      width:44px;
-      height:44px;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      background:rgba(0,0,0,.05);
-      border:1px solid rgba(0,0,0,.1);
-      color:#222;
-      cursor:pointer;
-      transition:transform .2s;
+    .slide.is-active video {
+      filter: brightness(1.05) contrast(1.05) saturate(1.1);
     }
-    .nav:hover{transform:translateY(-50%) scale(1.1);}
-    .prev{left:8px;} .next{right:8px;}
-    .nav svg{width:22px;height:22px;}
 
-    .dots{
-      display:flex;
-      gap:10px;
-      justify-content:center;
-      margin-top:22px;
+    .slide.is-prev {
+      transform: scale(0.82) rotateY(var(--tilt)) translateZ(var(--z-side));
+      opacity: 0.85;
+      visibility: visible;
+      z-index: 3;
+      filter: brightness(0.8);
     }
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:#ccc;
-      cursor:pointer;
-      transition:.25s;
+
+    .slide.is-next {
+      transform: scale(0.82) rotateY(calc(var(--tilt) * -1)) translateZ(var(--z-side));
+      opacity: 0.85;
+      visibility: visible;
+      z-index: 3;
+      filter: brightness(0.8);
     }
-    .dot.is-on{background:#4e79ff;width:22px;}
+
+    .nav {
+      position: absolute;
+      top: 50%;
+      translate: 0 -50%;
+      z-index: 9;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      color: #222;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .nav:hover {
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .prev {
+      left: 8px;
+    }
+    .next {
+      right: 8px;
+    }
+
+    .nav svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .dots {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 22px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ccc;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    .dot.is-on {
+      background: #4e79ff;
+      width: 22px;
+    }
   </style>
 
   <h1 class="title">Evaluation Demo</h1>
@@ -598,11 +621,8 @@
   <div class="trust-carousel" id="tr-carousel">
     <button class="nav prev" aria-label="Previous">
       <svg viewBox="0 0 24 24" fill="none">
-        <path d="M15 6l-6 6 6 6"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"/>
+        <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
       </svg>
     </button>
 
@@ -610,11 +630,8 @@
 
     <button class="nav next" aria-label="Next">
       <svg viewBox="0 0 24 24" fill="none">
-        <path d="M9 18l6-6-6-6"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"/>
+        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
       </svg>
     </button>
   </div>
@@ -622,117 +639,140 @@
   <div class="dots" id="tr-dots"></div>
 
   <script>
-  (() => {
-    const slidesData = [
-      { src: "static/videos/truthfulness.mp4", title: "Truthfulness" },
-      { src: "static/videos/safety.mp4", title: "Safety" },
-      { src: "static/videos/robustness.mp4", title: "Robustness" },
-      { src: "static/videos/privacy.mp4", title: "Privacy" },
-      { src: "static/videos/fairness.mp4", title: "Fairness" },
-    ];
+    (() => {
+      const slidesData = [
+        { src: "static/videos/truthfulness.mp4", title: "Truthfulness" },
+        { src: "static/videos/safety.mp4", title: "Safety" },
+        { src: "static/videos/robustness.mp4", title: "Robustness" },
+        { src: "static/videos/privacy.mp4", title: "Privacy" },
+        { src: "static/videos/fairness.mp4", title: "Fairness" },
+      ];
 
-    const track = document.getElementById('tr-track');
-    const dotsBox = document.getElementById('tr-dots');
-    const prevBtn = document.querySelector('#tr-carousel .prev');
-    const nextBtn = document.querySelector('#tr-carousel .next');
-    const carousel = document.getElementById('tr-carousel');
+      const track = document.getElementById("tr-track");
+      const dotsBox = document.getElementById("tr-dots");
+      const prevBtn = document.querySelector("#tr-carousel .prev");
+      const nextBtn = document.querySelector("#tr-carousel .next");
+      const carousel = document.getElementById("tr-carousel");
 
-    let slides = [];
-    function makeSlide({src,title},isClone=false,realIndex=null){
-      const el=document.createElement('div');
-      el.className='slide';
-      el.dataset.realIndex=realIndex??slides.length;
+      let slides = [];
+      function makeSlide({ src, title }, isClone = false, realIndex = null) {
+        const el = document.createElement("div");
+        el.className = "slide";
+        el.dataset.realIndex = realIndex ?? slides.length;
 
-      const wrapper=document.createElement('div');
-      wrapper.className='video-wrapper';
+        const v = document.createElement("video");
+        v.controls = true;
+        v.muted = true;
+        v.loop = false;
+        v.autoplay = false;
+        v.playsInline = true;
+        v.preload = "metadata";
+        v.innerHTML = `<source src="${src}" type="video/mp4">`;
 
-      const v=document.createElement('video');
-      v.controls=true; v.muted=true; v.loop=false; v.autoplay=false;
-      v.playsInline=true; v.preload="metadata";
-      v.innerHTML=`<source src="${src}" type="video/mp4">`;
+        const tag = document.createElement("div");
+        tag.className = "dynamic-tag";
+        tag.textContent = title;
 
-      const tag=document.createElement('div');
-      tag.className='dynamic-tag';
-      tag.textContent=title;
+        el.append(v, tag);
+        if (isClone) el.dataset.clone = "true";
+        return el;
+      }
 
-      wrapper.append(v,tag);
-      el.append(wrapper);
-      if(isClone) el.dataset.clone="true";
-      return el;
-    }
+      slidesData.forEach((d, i) => slides.push(makeSlide(d, false, i)));
+      const firstClone = makeSlide(slidesData[0], true, 0);
+      const lastClone = makeSlide(slidesData[slidesData.length - 1], true, slidesData.length - 1);
+      track.append(lastClone, ...slides, firstClone);
 
-    slidesData.forEach((d,i)=>slides.push(makeSlide(d,false,i)));
-    const firstClone=makeSlide(slidesData[0],true,0);
-    const lastClone=makeSlide(slidesData[slidesData.length-1],true,slidesData.length-1);
-    track.append(lastClone,...slides,firstClone);
+      const dots = slidesData.map((_, i) => {
+        const d = document.createElement("div");
+        d.className = "dot";
+        d.addEventListener("click", () => goTo(i + 1));
+        dotsBox.append(d);
+        return d;
+      });
 
-    const dots=slidesData.map((_,i)=>{
-      const d=document.createElement('div');
-      d.className='dot';
-      d.addEventListener('click',()=>goTo(i+1));
-      dotsBox.append(d);
-      return d;
-    });
+      let index = 1;
+      const gapPx = () => parseFloat(getComputedStyle(track).gap) || 0;
+      const cardW = () => track.children[0].offsetWidth;
+      const unit = () => cardW() + gapPx();
+      const centerOffset = () => (carousel.clientWidth - cardW()) / 2;
 
-    let index=1;
-    const gapPx=()=>parseFloat(getComputedStyle(track).gap)||0;
-    const cardW=()=>track.children[0].offsetWidth;
-    const unit=()=>cardW()+gapPx();
-    const centerOffset=()=> (carousel.clientWidth - cardW())/2;
+      function setClasses() {
+        [...track.children].forEach((el) => el.classList.remove("is-active", "is-prev", "is-next"));
+        const total = track.children.length;
+        const curr = track.children[index];
+        const prev = track.children[(index - 1 + total) % total];
+        const next = track.children[(index + 1) % total];
+        curr.classList.add("is-active");
+        prev.classList.add("is-prev");
+        next.classList.add("is-next");
 
-    function setClasses(){
-      [...track.children].forEach(el=>el.classList.remove('is-active','is-prev','is-next'));
-      const total=track.children.length;
-      const curr=track.children[index];
-      const prev=track.children[(index-1+total)%total];
-      const next=track.children[(index+1)%total];
-      curr.classList.add('is-active'); prev.classList.add('is-prev'); next.classList.add('is-next');
+        [...track.children].forEach((el, i) => {
+          const v = el.querySelector("video");
+          const tag = el.querySelector(".dynamic-tag");
+          if (!v) return;
+          if (i === index) {
+            v.play().catch(() => {});
+            v.onended = () => {
+              step(1);
+            };
+            tag.classList.add("show");
+          } else {
+            v.pause();
+            v.onended = null;
+            tag.classList.remove("show");
+          }
+        });
 
-      [...track.children].forEach((el,i)=>{
-        const v=el.querySelector('video');
-        const tag=el.querySelector('.dynamic-tag');
-        if(!v) return;
-        if(i===index){
-          v.play().catch(()=>{});
-          v.onended=()=>{ step(1); };
-          tag.classList.add('show');
-        } else {
-          v.pause(); v.onended=null;
-          tag.classList.remove('show');
+        const r = realIndex();
+        dots.forEach((d, i) => d.classList.toggle("is-on", i === r));
+      }
+
+      function realIndex() {
+        let i = index - 1;
+        if (i < 0) i = slides.length - 1;
+        if (i >= slides.length) i = 0;
+        return i;
+      }
+
+      function render(animate = true) {
+        track.style.transition = animate ? `transform var(--speed) cubic-bezier(.22,.61,.36,1)` : "none";
+        const x = centerOffset() - index * unit();
+        track.style.transform = `translateX(${x}px)`;
+        setClasses();
+      }
+
+      track.addEventListener("transitionend", () => {
+        const total = track.children.length;
+        if (track.children[index].dataset.clone === "true") {
+          if (index === 0) index = slides.length;
+          else if (index === total - 1) index = 1;
+          render(false);
         }
       });
-      const r=realIndex();
-      dots.forEach((d,i)=>d.classList.toggle('is-on',i===r));
-    }
 
-    function realIndex(){let i=index-1;if(i<0)i=slides.length-1;if(i>=slides.length)i=0;return i;}
-    function render(animate=true){
-      track.style.transition=animate?`transform var(--speed) cubic-bezier(.22,.61,.36,1)`:'none';
-      const x=centerOffset()-index*unit();
-      track.style.transform=`translateX(${x}px)`; setClasses();
-    }
-
-    track.addEventListener('transitionend',()=>{
-      const total=track.children.length;
-      if(track.children[index].dataset.clone==="true"){
-        if(index===0)index=slides.length;else if(index===total-1)index=1;
-        render(false);
+      function step(d) {
+        index += d;
+        render(true);
       }
-    });
 
-    function step(d){index+=d;render(true);}
-    function goTo(r1){index=r1;render(true);}
-    prevBtn.addEventListener('click',()=>step(-1));
-    nextBtn.addEventListener('click',()=>step(+1));
+      function goTo(r1) {
+        index = r1;
+        render(true);
+      }
 
-    window.addEventListener('load',()=>{
-      const firstVideo=track.children[index]?.querySelector('video');
-      if(firstVideo) firstVideo.play().catch(()=>{});
-      render(false);
-    });
-  })();
+      prevBtn.addEventListener("click", () => step(-1));
+      nextBtn.addEventListener("click", () => step(+1));
+
+      window.addEventListener("load", () => {
+        const firstVideo = track.children[index]?.querySelector("video");
+        if (firstVideo) firstVideo.play().catch(() => {});
+        render(false);
+      });
+    })();
   </script>
 </section>
+
 
 <!-- Image carousel -->
 <section class="hero is-small">

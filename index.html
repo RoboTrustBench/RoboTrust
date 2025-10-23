@@ -581,8 +581,7 @@
   </div>
   <div class="dots" id="tr-dots"></div>
 
-  <script>
-(() => {
+  (() => {
   const themeMap = {
     "Truthfulness": ["#4e79ff", "#7ec8ff"],
     "Safety": ["#e94b4b", "#ff8a65"],
@@ -612,7 +611,8 @@
     const el=document.createElement('div'); el.className='slide';
     el.dataset.realIndex=realIndex??slides.length;
     const v=document.createElement('video');
-    v.controls=true;v.muted=false;v.loop=false;v.autoplay=false;
+    v.controls=true;v.muted=true;   // ✅ 改成静音，确保允许自动播放
+    v.loop=false;v.autoplay=false;
     v.playsInline=true;v.preload="metadata";
     v.innerHTML=`<source src="${src}" type="video/mp4">`;
     el.append(v);
@@ -648,8 +648,7 @@
       const v=el.querySelector('video');
       if(!v) return;
       if(i===index){
-        // ✅ 自动播放主视频
-        v.play().catch(()=>{});
+        v.play().catch(()=>{}); // ✅ 主视频自动播放
       } else {
         v.pause();
       }
@@ -683,6 +682,15 @@
     });
   });
   render(false);
+
+  // ✅ 新增逻辑：页面加载完成后自动播放第一个视频
+  window.addEventListener('load', () => {
+    const firstVideo = track.children[index]?.querySelector('video');
+    if (firstVideo) {
+      firstVideo.play().catch(() => {});
+    }
+  });
+
   let rz=null;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>render(false),100);});
 
   slidesData.forEach((data,i)=>{

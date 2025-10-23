@@ -590,6 +590,36 @@
       backface-visibility: hidden;
     }
 
+    /* ===== 修复“视频被白层盖住” + 继续消除黑线 ===== */
+
+    /* 1) 移除会遮挡视频的护边层 */
+    .trust-carousel-pro .slide::before{
+      content: none !important;   /* 直接禁用 */
+    }
+    
+    /* 2) 让媒体容器成为上层，用白色描边覆盖任何发丝缝 */
+    .trust-carousel-pro .media{
+      position: relative;
+      z-index: 1;                /* 确保在任何背景层之上 */
+      background: #fff;
+      outline: 1px solid #fff;   /* 外描边，向外盖住缝 */
+      outline-offset: -1px;      /* 往内一点，防止膨胀布局 */
+    }
+    
+    /* 3) 内描边加粗，保证视频与容器之间永远是白色 */
+    .trust-carousel-pro .media::after{
+      box-shadow: 0 0 0 2px #fff inset !important;
+    }
+    
+    /* 4) 视频确保撑满容器且可见 */
+    .trust-carousel-pro .media > video{
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;       /* 保证不裁切、不拉伸 */
+    }
+
+
   </style>
 
   <h1 class="title">Evaluation Demo</h1>

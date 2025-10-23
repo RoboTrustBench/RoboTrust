@@ -582,7 +582,7 @@
   <div class="dots" id="tr-dots"></div>
    
   <script>
-  (() => {
+(() => {
   const themeMap = {
     "Truthfulness": ["#4e79ff", "#7ec8ff"],
     "Safety": ["#e94b4b", "#ff8a65"],
@@ -612,9 +612,12 @@
     const el=document.createElement('div'); el.className='slide';
     el.dataset.realIndex=realIndex??slides.length;
     const v=document.createElement('video');
-    v.controls=true;v.muted=true;   // ✅ 改成静音，确保允许自动播放
-    v.loop=false;v.autoplay=false;
-    v.playsInline=true;v.preload="metadata";
+    v.controls=true;
+    v.muted=true;              // ✅ 静音允许自动播放
+    v.loop=false;
+    v.autoplay=false;
+    v.playsInline=true;
+    v.preload="metadata";
     v.innerHTML=`<source src="${src}" type="video/mp4">`;
     el.append(v);
     if(isClone) el.dataset.clone="true";
@@ -649,7 +652,7 @@
       const v=el.querySelector('video');
       if(!v) return;
       if(i===index){
-        v.play().catch(()=>{}); // ✅ 主视频自动播放
+        v.play().catch(()=>{});  // ✅ 主视频自动播放
       } else {
         v.pause();
       }
@@ -684,13 +687,33 @@
   });
   render(false);
 
-  // ✅ 新增逻辑：页面加载完成后自动播放第一个视频
+  // ✅ 页面加载后自动播放第一个视频
   window.addEventListener('load', () => {
     const firstVideo = track.children[index]?.querySelector('video');
-    if (firstVideo) {
-      firstVideo.play().catch(() => {});
-    }
+    if (firstVideo) firstVideo.play().catch(() => {});
   });
+
+  // ✅ 自动循环轮播功能（每10秒切换）
+  let autoTimer = null;
+  function startAutoPlay(){
+    stopAutoPlay(); // 避免重复计时器
+    autoTimer = setInterval(() => {
+      step(1);
+    }, 10000); // 每10秒切换一次
+  }
+  function stopAutoPlay(){
+    if(autoTimer){
+      clearInterval(autoTimer);
+      autoTimer = null;
+    }
+  }
+
+  // ✅ 鼠标悬停时暂停自动轮播，离开后恢复
+  carousel.addEventListener('mouseenter', stopAutoPlay);
+  carousel.addEventListener('mouseleave', startAutoPlay);
+
+  // ✅ 页面初始化后开始自动轮播
+  startAutoPlay();
 
   let rz=null;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>render(false),100);});
 

@@ -424,7 +424,93 @@
     </div>
   </div>
 </section>
- <section class="trust-carousel-pro">
+ 
+<!-- Image carousel -->
+<section class="hero is-small">
+  <div class="hero-body">
+    <div class="container">
+      <!-- 简化版：直接显示图像，无需 carousel -->
+      <div class="columns is-centered">
+        <div class="column is-three-quarters">
+          <img src="static/images/overall.jpg" alt="Overview of RoboTrust" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+          <h2 class="subtitle has-text-centered" style="margin-top: 1rem;">
+            Overview of RoboTrust.
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End image carousel -->
+
+
+
+<!-- Paper abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <!-- TODO: Replace with your paper abstract -->
+          <p>
+            Multimodal large language models (MLLMs) show great potential for embodied tasks, offering pathways toward real-world applications. Yet trustworthy embodied intelligence, which is difficult to ensure in dynamic and complex environments, remains a necessary prerequisite, and no unified benchmark currently exists for its evaluation. To fill this gap, we introduce <strong>RoboTrust</strong>, a comprehensive benchmark for trustworthy embodied intelligence. We provide the first formal and systematic definition of trust in embodied agents, decomposing it into five key dimensions—<em>Truthfulness</em>, <em>Safety</em>, <em>Fairness</em>, <em>Robustness</em>, and <em>Privacy</em>. Building on this foundation, RoboTrust evaluates these dimensions through 12 fine-grained tasks probing factual consistency, risk perception and response, bias and preference, resilience under perturbations, and privacy protection. Unlike static evaluations, RoboTrust integrates interactive environments with unexpected risks and disturbances, reflecting the complexity of real-world deployment. We benchmark 19 state-of-the-art MLLMs and reveal substantial deficiencies in embodied trust, with models almost uniformly failing on privacy protection and proactive risk avoidance. Furthermore, we observe no positive correlation between trustworthiness and model capability, and explicit reasoning traces offer little improvement, underscoring a fundamental absence of trust awareness in current systems. RoboTrust provides a unified and interactive platform for comprehensive trust evaluation, revealing critical shortcomings of current MLLMs and offering valuable insights for the development of trustworthy embodied agents.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End paper abstract -->
+
+<!-- Section Perspective Module -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Trustworthiness Dimensions Overview</h2>
+        <div class="content">
+          <div class="perspective-container">
+            <div class="circle">
+              <!-- Sector 1: Truthfulness -->
+              <div class="sector" data-angle="0deg" data-info="info1"></div>
+              <div class="info-box" id="info1">
+                <h3>Truthfulness</h3>
+                <p> Truthfulness evaluation examines whether MLLMs in embodied tasks can generate actions consistent with objective facts. Formally, given an initial environment state $ s_0 $ and an instruction $ i $, the model produces a trajectory $ r = (s_0, a_0, \dots, a_T) $. We define $ \mathcal{A}_{\mathrm{viol}} $ as the set of fact-violating actions. A truthful trajectory requires that every action satisfies: $ a_t \notin \mathcal{A}_{\mathrm{viol}}, \forall t \in [0, T] $.</p>
+              </div>
+              <!-- Sector 2: Safety -->
+              <div class="sector" data-angle="72deg" data-info="info2"></div>
+              <div class="info-box" id="info2">
+                <h3>Safety</h3>
+                <p>Safety refers to the ability of MLLMs in embodied tasks to recognize risks, plan safe actions, and respond effectively to unexpected hazards, thereby preventing harm to humans, the environment, or themselves. Formally, given an initial environment $ s_0 $ and instruction $ i $, the model generates a trajectory $ \tau = (s_0, a_0, \dots, a_T) $. We define a safety goal $ G $ with respect to a constraint set $ C = \{ c_1, c_2, \dots, c_m \} $, where $ G(s_T) = 1 \Leftrightarrow \forall c \in C,\, c(s_T) = \text{true} $. Safety requires that the final state $ s_T $ satisfies $ G(s_T) = 1 $, ensuring that all safety constraints hold (e.g., the microwave must be off after task completion).</p>
+              </div>
+              <!-- Sector 3: Fairness -->
+              <div class="sector" data-angle="144deg" data-info="info3"></div>
+              <div class="info-box" id="info3">
+                <h3>Fairness</h3>
+                <p>Fairness evaluation examines whether MLLMs in embodied tasks provide equitable performance across diverse users and environments, independent of attributes irrelevant to task goals. Formally, let $ u \in \mathcal{U} $ denote a user with non-task attribute $ \phi(u) $, and let $ R(\tau|u) $ be the success of trajectory $ \tau $ under user $ u $. Fairness requires $ |R(\tau|u_1) - R(\tau|u_2)| < \epsilon,\, \forall u_1, u_2 \text{ with } \phi(u_1) \neq \phi(u_2) $, ensuring outcome invariance with respect to non-task attributes.</p>
+              </div>
+              <!-- Sector 4: Robustness -->
+              <div class="sector" data-angle="216deg" data-info="info4"></div>
+              <div class="info-box" id="info4">
+                <h3>Robustness</h3>
+                <p>Robustness evaluation examines whether MLLMs in embodied tasks can maintain task performance under uncertainty. Given an initial state $ s_0 $ and instruction $ i $, a trajectory $ \tau' = (s_0, a_0, \dots, a_T) $ is obtained through agent–environment interaction under perturbations, and a reference trajectory $ \tau^\ast $ is obtained under unperturbed inputs. Let $ \Delta = | R(\tau') - R(\tau^\ast) | $, where $ R(\cdot) $ is the task success function. Robustness requires $ \Delta \leq \varepsilon $ for a prescribed tolerance $ \varepsilon \geq 0 $. We operationalize this via two task types: Input Perturbation and Dynamic Environment Adaptation.</p>
+              </div>
+              <!-- Sector 5: Privacy -->
+              <div class="sector" data-angle="288deg" data-info="info5"></div>
+              <div class="info-box" id="info5">
+                <h3>Privacy</h3>
+                <p>Privacy evaluation examines whether MLLMs in embodied tasks can protect sensitive information while avoiding the use of irrelevant private information. Formally, at each step, the agent selects an action $ a_t \sim \pi_{\mathrm{VLM}}(o_t, i; \theta) $. Let $ \mathcal{A}_{\text{priv}}(s_t, i) $ denote the set of privacy-violating actions. Privacy requires $ a_t \notin \mathcal{A}_{\text{priv}}(s_t, i),\, \forall t \in [0, T] $, ensuring that trajectories do not expose or misuse private information. We operationalize this through three task types: Privacy-Violating Instruction Recognition, Privacy Preservation, and Minimal Information Use.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="trust-carousel-pro">
   <style>
     .trust-carousel-pro{
       --slide-w: clamp(260px, 36vw, 500px);
@@ -778,94 +864,6 @@
   </script>
 </section>
 
-
-
-
-
-<!-- Image carousel -->
-<section class="hero is-small">
-  <div class="hero-body">
-    <div class="container">
-      <!-- 简化版：直接显示图像，无需 carousel -->
-      <div class="columns is-centered">
-        <div class="column is-three-quarters">
-          <img src="static/images/overall.jpg" alt="Overview of RoboTrust" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-          <h2 class="subtitle has-text-centered" style="margin-top: 1rem;">
-            Overview of RoboTrust.
-          </h2>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End image carousel -->
-
-
-
-<!-- Paper abstract -->
-<section class="section hero is-light">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <!-- TODO: Replace with your paper abstract -->
-          <p>
-            Multimodal large language models (MLLMs) show great potential for embodied tasks, offering pathways toward real-world applications. Yet trustworthy embodied intelligence, which is difficult to ensure in dynamic and complex environments, remains a necessary prerequisite, and no unified benchmark currently exists for its evaluation. To fill this gap, we introduce <strong>RoboTrust</strong>, a comprehensive benchmark for trustworthy embodied intelligence. We provide the first formal and systematic definition of trust in embodied agents, decomposing it into five key dimensions—<em>Truthfulness</em>, <em>Safety</em>, <em>Fairness</em>, <em>Robustness</em>, and <em>Privacy</em>. Building on this foundation, RoboTrust evaluates these dimensions through 12 fine-grained tasks probing factual consistency, risk perception and response, bias and preference, resilience under perturbations, and privacy protection. Unlike static evaluations, RoboTrust integrates interactive environments with unexpected risks and disturbances, reflecting the complexity of real-world deployment. We benchmark 19 state-of-the-art MLLMs and reveal substantial deficiencies in embodied trust, with models almost uniformly failing on privacy protection and proactive risk avoidance. Furthermore, we observe no positive correlation between trustworthiness and model capability, and explicit reasoning traces offer little improvement, underscoring a fundamental absence of trust awareness in current systems. RoboTrust provides a unified and interactive platform for comprehensive trust evaluation, revealing critical shortcomings of current MLLMs and offering valuable insights for the development of trustworthy embodied agents.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End paper abstract -->
-
-<!-- Section Perspective Module -->
-<section class="section hero is-light">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Trustworthiness Dimensions Overview</h2>
-        <div class="content">
-          <div class="perspective-container">
-            <div class="circle">
-              <!-- Sector 1: Truthfulness -->
-              <div class="sector" data-angle="0deg" data-info="info1"></div>
-              <div class="info-box" id="info1">
-                <h3>Truthfulness</h3>
-                <p> Truthfulness evaluation examines whether MLLMs in embodied tasks can generate actions consistent with objective facts. Formally, given an initial environment state $ s_0 $ and an instruction $ i $, the model produces a trajectory $ r = (s_0, a_0, \dots, a_T) $. We define $ \mathcal{A}_{\mathrm{viol}} $ as the set of fact-violating actions. A truthful trajectory requires that every action satisfies: $ a_t \notin \mathcal{A}_{\mathrm{viol}}, \forall t \in [0, T] $.</p>
-              </div>
-              <!-- Sector 2: Safety -->
-              <div class="sector" data-angle="72deg" data-info="info2"></div>
-              <div class="info-box" id="info2">
-                <h3>Safety</h3>
-                <p>Safety refers to the ability of MLLMs in embodied tasks to recognize risks, plan safe actions, and respond effectively to unexpected hazards, thereby preventing harm to humans, the environment, or themselves. Formally, given an initial environment $ s_0 $ and instruction $ i $, the model generates a trajectory $ \tau = (s_0, a_0, \dots, a_T) $. We define a safety goal $ G $ with respect to a constraint set $ C = \{ c_1, c_2, \dots, c_m \} $, where $ G(s_T) = 1 \Leftrightarrow \forall c \in C,\, c(s_T) = \text{true} $. Safety requires that the final state $ s_T $ satisfies $ G(s_T) = 1 $, ensuring that all safety constraints hold (e.g., the microwave must be off after task completion).</p>
-              </div>
-              <!-- Sector 3: Fairness -->
-              <div class="sector" data-angle="144deg" data-info="info3"></div>
-              <div class="info-box" id="info3">
-                <h3>Fairness</h3>
-                <p>Fairness evaluation examines whether MLLMs in embodied tasks provide equitable performance across diverse users and environments, independent of attributes irrelevant to task goals. Formally, let $ u \in \mathcal{U} $ denote a user with non-task attribute $ \phi(u) $, and let $ R(\tau|u) $ be the success of trajectory $ \tau $ under user $ u $. Fairness requires $ |R(\tau|u_1) - R(\tau|u_2)| < \epsilon,\, \forall u_1, u_2 \text{ with } \phi(u_1) \neq \phi(u_2) $, ensuring outcome invariance with respect to non-task attributes.</p>
-              </div>
-              <!-- Sector 4: Robustness -->
-              <div class="sector" data-angle="216deg" data-info="info4"></div>
-              <div class="info-box" id="info4">
-                <h3>Robustness</h3>
-                <p>Robustness evaluation examines whether MLLMs in embodied tasks can maintain task performance under uncertainty. Given an initial state $ s_0 $ and instruction $ i $, a trajectory $ \tau' = (s_0, a_0, \dots, a_T) $ is obtained through agent–environment interaction under perturbations, and a reference trajectory $ \tau^\ast $ is obtained under unperturbed inputs. Let $ \Delta = | R(\tau') - R(\tau^\ast) | $, where $ R(\cdot) $ is the task success function. Robustness requires $ \Delta \leq \varepsilon $ for a prescribed tolerance $ \varepsilon \geq 0 $. We operationalize this via two task types: Input Perturbation and Dynamic Environment Adaptation.</p>
-              </div>
-              <!-- Sector 5: Privacy -->
-              <div class="sector" data-angle="288deg" data-info="info5"></div>
-              <div class="info-box" id="info5">
-                <h3>Privacy</h3>
-                <p>Privacy evaluation examines whether MLLMs in embodied tasks can protect sensitive information while avoiding the use of irrelevant private information. Formally, at each step, the agent selects an action $ a_t \sim \pi_{\mathrm{VLM}}(o_t, i; \theta) $. Let $ \mathcal{A}_{\text{priv}}(s_t, i) $ denote the set of privacy-violating actions. Privacy requires $ a_t \notin \mathcal{A}_{\text{priv}}(s_t, i),\, \forall t \in [0, T] $, ensuring that trajectories do not expose or misuse private information. We operationalize this through three task types: Privacy-Violating Instruction Recognition, Privacy Preservation, and Minimal Information Use.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 <!-- End Section Perspective Module -->
 <div class="columns is-centered has-text-centered">
   <h2 class="title is-3">Leaderboard</h2>

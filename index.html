@@ -434,17 +434,19 @@
       --bez: cubic-bezier(.22,.61,.36,1);
       --speed: 700ms;
       --shadow-strong: 0 14px 40px rgba(0,0,0,.25);
-      --shadow-soft:   0 10px 24px rgba(0,0,0,.12);
+      --shadow-soft: 0 10px 24px rgba(0,0,0,.12);
       --persp: 900px;
       --tilt: 20deg;
       --z-main: 90px;
       --z-side: 40px;
+      --grad-color1: #ff7b7b; /* 初始渐变色 */
+      --grad-color2: #a26bff;
       background:#fff; color:#111;
       display:flex; flex-direction:column; align-items:center;
       padding:min(6vh,64px) 0; isolation:isolate;
     }
 
-    /* 标题 */
+    /* 标题样式 */
     .trust-carousel-pro .title{
       font-weight:900;
       font-size:clamp(24px,2.5vw,36px);
@@ -460,7 +462,7 @@
       bottom:-10px;
       width:60px; height:4px;
       border-radius:4px;
-      background:linear-gradient(90deg,#ff7b7b,#a26bff);
+      background:linear-gradient(90deg,var(--grad-color1),var(--grad-color2));
       transition:background .6s ease;
     }
 
@@ -471,31 +473,41 @@
       perspective:var(--persp);
     }
 
-    .track{display:flex;align-items:center;gap:var(--gap);transition:transform var(--speed) var(--bez)}
+    .track{
+      display:flex;align-items:center;gap:var(--gap);
+      transition:transform var(--speed) var(--bez)
+    }
 
     .slide{
       flex:0 0 var(--slide-w); min-width:var(--slide-w); height:var(--slide-h);
-      border-radius:var(--radius); overflow:hidden; position:relative; background:#fff;
+      border-radius:var(--radius); overflow:hidden; position:relative;
       transform:scale(.78) translateZ(0);
       opacity:0; visibility:hidden; pointer-events:none;
       filter:saturate(.75) contrast(.95);
       box-shadow:var(--shadow-soft);
-      transition:
-        transform var(--speed) var(--bez),
-        opacity var(--speed) var(--bez),
-        filter var(--speed) var(--bez),
-        z-index var(--speed) var(--bez),
-        visibility 0s linear var(--speed);
-      z-index:1; cursor:pointer; will-change:transform;
+      transition:all var(--speed) var(--bez);
+      z-index:1; cursor:pointer;
     }
-    .slide video{width:100%;height:100%;object-fit:contain;background:#000;display:block;}
+
+    .slide video{
+      width:100%; height:100%;
+      object-fit:contain;
+      background:#000; display:block;
+    }
+
     .slide.is-active{
       transform:translateZ(var(--z-main)) scale(1.10);
-      opacity:1;visibility:visible;pointer-events:auto;
-      filter:none;z-index:5;box-shadow:var(--shadow-strong);
+      opacity:1; visibility:visible; pointer-events:auto;
+      filter:none; z-index:5; box-shadow:var(--shadow-strong);
     }
-    .slide.is-prev{transform:translateZ(var(--z-side)) scale(.9) rotateY(var(--tilt));opacity:.85;visibility:visible;}
-    .slide.is-next{transform:translateZ(var(--z-side)) scale(.9) rotateY(calc(var(--tilt)*-1));opacity:.85;visibility:visible;}
+    .slide.is-prev{
+      transform:translateZ(var(--z-side)) scale(.9) rotateY(var(--tilt));
+      opacity:.85; visibility:visible; z-index:3;
+    }
+    .slide.is-next{
+      transform:translateZ(var(--z-side)) scale(.9) rotateY(calc(var(--tilt)*-1));
+      opacity:.85; visibility:visible; z-index:3;
+    }
 
     .label{display:none;}
 
@@ -504,7 +516,7 @@
       position:absolute;
       top:-58px; left:50%;
       transform:translateX(-50%) scale(.9);
-      background:rgba(0,0,0,.75);
+      background:rgba(0,0,0,.7);
       color:#fff;
       padding:6px 20px;
       border-radius:14px;
@@ -513,27 +525,29 @@
       opacity:0;
       pointer-events:none;
       transition:all .5s ease;
-      backdrop-filter:blur(4px);
     }
     .dynamic-tag.show{
       opacity:1;
       transform:translateX(-50%) scale(1);
     }
 
-    /* 上方当前维度显示 */
+    /* 当前播放维度显示 */
     .active-dimension{
       font-weight:700;
       font-size:clamp(16px,1.8vw,20px);
-      color:#444;
+      color:var(--grad-color1);
       margin-bottom:16px;
       min-height:28px;
       opacity:0;
       transition:opacity .5s ease, transform .5s ease;
       transform:translateY(-10px);
     }
-    .active-dimension.show{opacity:1;transform:translateY(0);}
+    .active-dimension.show{
+      opacity:1;
+      transform:translateY(0);
+    }
 
-    /* 轮播按钮与圆点 */
+    /* 导航按钮与圆点 */
     .nav{
       position:absolute; top:50%; translate:0 -50%; z-index:9;
       width:44px; height:44px; border-radius:999px;
@@ -569,7 +583,6 @@
 
   <script>
   (() => {
-    /* 各维度主题色配置 */
     const themeMap = {
       "Truthfulness": ["#4e79ff", "#7ec8ff"],
       "Safety": ["#e94b4b", "#ff8a65"],
@@ -586,15 +599,15 @@
       { src: "static/videos/fairness.mp4",      title: "Fairness" },
     ];
 
-    const track=document.getElementById('tr-track');
-    const dotsBox=document.getElementById('tr-dots');
-    const prevBtn=document.querySelector('#tr-carousel .prev');
-    const nextBtn=document.querySelector('#tr-carousel .next');
-    const carousel=document.getElementById('tr-carousel');
-    const activeTag=document.getElementById('active-dimension');
-    const title=document.querySelector('.title');
+    const track = document.getElementById('tr-track');
+    const dotsBox = document.getElementById('tr-dots');
+    const prevBtn = document.querySelector('#tr-carousel .prev');
+    const nextBtn = document.querySelector('#tr-carousel .next');
+    const carousel = document.getElementById('tr-carousel');
+    const activeTag = document.getElementById('active-dimension');
+    const root = document.querySelector('.trust-carousel-pro');
 
-    let slides=[];
+    let slides = [];
     function makeSlide({src,title},isClone=false,realIndex=null){
       const el=document.createElement('div'); el.className='slide';
       el.dataset.realIndex=realIndex??slides.length;
@@ -615,7 +628,7 @@
     const dots=slidesData.map((_,i)=>{
       const d=document.createElement('div'); d.className='dot';
       d.addEventListener('click',()=>goTo(i+1));
-      dotsBox.append(d);return d;
+      dotsBox.append(d); return d;
     });
 
     let index=1;
@@ -636,7 +649,6 @@
     }
 
     function realIndex(){let i=index-1;if(i<0)i=slides.length-1;if(i>=slides.length)i=0;return i;}
-
     function render(animate=true){
       track.style.transition=animate?`transform var(--speed) var(--bez)`:'none';
       const x=centerOffset()-index*unit();
@@ -664,7 +676,6 @@
     render(false);
     let rz=null;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>render(false),100);});
 
-    /* 动态标签与主题色 */
     slidesData.forEach((data,i)=>{
       const slide=track.children[i+1];
       const tag=document.createElement('div');
@@ -678,54 +689,8 @@
         activeTag.textContent=data.title;
         activeTag.classList.add('show');
         const [c1,c2]=themeMap[data.title];
-        title.style.setProperty('--grad',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('color',c1);
-        title.style.setProperty('--currentColor',c1);
-        title.style.setProperty('--shadowColor',c2);
-        title.style.setProperty('--underline',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('--color',c1);
-        title.style.setProperty('--text-shadow',`0 2px 6px ${c2}`);
-        title.style.setProperty('--bg-gradient',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('--hover',c2);
-        title.style.setProperty('--focus',c1);
-        title.style.setProperty('--border-color',c2);
-        title.style.setProperty('--background',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('--gradient',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('--glow',`0 0 12px ${c2}`);
-        title.style.setProperty('--stroke',c1);
-        title.style.setProperty('--underline',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('--shadow',`0 0 6px ${c2}`);
-        title.style.setProperty('--highlight',c2);
-        title.style.setProperty('--border',`2px solid ${c1}`);
-        title.style.setProperty('--main-color',c1);
-        title.style.setProperty('--accent-color',c2);
-        title.style.setProperty('--background-gradient',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('--bg',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('--fg',c1);
-        title.style.setProperty('--underline-gradient',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('--accent',c2);
-        title.style.setProperty('--gradient',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('--highlight-color',c2);
-        title.style.setProperty('--accent-shadow',`0 0 12px ${c2}`);
-        title.style.setProperty('--bg-light',c2);
-        title.style.setProperty('--bg-dark',c1);
-        title.style.setProperty('--shadow-dark',c1);
-        title.style.setProperty('--shadow-light',c2);
-        title.style.setProperty('--bgcolor',c1);
-        title.style.setProperty('--bggradient',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('--underline-gradient',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('--border-glow',`0 0 6px ${c2}`);
-        title.style.setProperty('--color-glow',c2);
-        title.style.setProperty('--color-highlight',c1);
-        title.style.setProperty('--color',c1);
-        title.style.setProperty('--highlight',c2);
-        title.style.setProperty('--bg',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('--text',c1);
-        title.style.setProperty('--grad',`linear-gradient(90deg,${c1},${c2})`);
-        title.style.setProperty('--highlight-color',c2);
-        title.style.setProperty('--grad',`linear-gradient(90deg,${c1},${c2})`);
-        document.querySelector('.title::after'); 
-        document.styleSheets[0].insertRule(`.trust-carousel-pro .title::after{background:linear-gradient(90deg,${c1},${c2}) !important;}`,0);
+        root.style.setProperty('--grad-color1',c1);
+        root.style.setProperty('--grad-color2',c2);
       });
       const hideTag=()=>{
         tag.classList.remove('show');
@@ -737,6 +702,7 @@
   })();
   </script>
 </section>
+
 
 
    

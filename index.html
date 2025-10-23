@@ -492,44 +492,57 @@
     <h2 class="title is-3">Trustworthiness Dimensions Overview</h2>
     <div class="title-underline"></div>
 
-    <div class="carousel-3d">
-      <div class="card"> 
-        <h3>Truthfulness</h3>
-        <p>
-          Evaluates whether MLLMs generate actions consistent with objective facts.
-          A truthful trajectory requires every action to avoid fact-violating steps.
-        </p>
+    <!-- Carousel container -->
+    <div class="carousel-container">
+      <button class="nav-btn prev">&#10094;</button>
+      <div class="carousel-track">
+        <div class="card truthfulness">
+          <h3>Truthfulness</h3>
+          <p>
+            Evaluates whether MLLMs generate actions consistent with objective facts.
+            A truthful trajectory avoids fact-violating steps and aligns with reality.
+          </p>
+        </div>
+
+        <div class="card safety">
+          <h3>Safety</h3>
+          <p>
+            Measures whether MLLMs recognize risks, plan safe actions, and respond effectively to hazards,
+            preventing harm to humans, environments, or themselves.
+          </p>
+        </div>
+
+        <div class="card fairness">
+          <h3>Fairness</h3>
+          <p>
+            Examines whether MLLMs perform equitably across diverse users and conditions,
+            independent of irrelevant or biased attributes.
+          </p>
+        </div>
+
+        <div class="card robustness">
+          <h3>Robustness</h3>
+          <p>
+            Tests whether MLLMs maintain task performance under uncertainty or environmental perturbations,
+            ensuring reliable control in dynamic scenes.
+          </p>
+        </div>
+
+        <div class="card privacy">
+          <h3>Privacy</h3>
+          <p>
+            Evaluates how well MLLMs protect sensitive information and minimize unnecessary private data exposure
+            during perception and reasoning.
+          </p>
+        </div>
       </div>
-      <div class="card"> 
-        <h3>Safety</h3>
-        <p>
-          Examines the model's ability to recognize risks and plan safe actions that avoid harm.
-        </p>
-      </div>
-      <div class="card"> 
-        <h3>Fairness</h3>
-        <p>
-          Ensures equitable task performance across users and conditions independent of bias.
-        </p>
-      </div>
-      <div class="card"> 
-        <h3>Robustness</h3>
-        <p>
-          Tests whether MLLMs maintain performance under uncertainty or input perturbations.
-        </p>
-      </div>
-      <div class="card"> 
-        <h3>Privacy</h3>
-        <p>
-          Measures how well MLLMs protect sensitive information and avoid unnecessary data exposure.
-        </p>
-      </div>
+      <button class="nav-btn next">&#10095;</button>
     </div>
   </div>
 </section>
 
 <style>
-/* === Section base === */
+/* Section & title */
 #trust-carousel {
   background: #fafbfc;
   padding: 4rem 1rem;
@@ -542,70 +555,127 @@
   background: linear-gradient(90deg, #ff77e9, #7a6cff);
 }
 
-/* === 3D Carousel Container === */
-.carousel-3d {
+/* === Carousel layout === */
+.carousel-container {
   position: relative;
   width: 100%;
-  height: 320px;
+  max-width: 1100px;
   margin: auto;
-  perspective: 1200px;
-  transform-style: preserve-3d;
-  animation: rotate3d 30s linear infinite;
+  overflow: hidden;
 }
-
-/* === Each Card === */
+.carousel-track {
+  display: flex;
+  transition: transform 0.6s ease;
+}
 .card {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform-origin: center center -400px;
-  width: 300px;
-  height: 260px;
-  padding: 1rem;
-  border-radius: 12px;
-  background: white;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  flex: 0 0 80%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   text-align: left;
-  transition: transform 0.4s ease, opacity 0.4s ease;
+  color: #fff;
+  transform: scale(0.9);
+  opacity: 0.8;
+  transition: transform 0.6s ease, opacity 0.6s ease;
+}
+.card.active {
+  transform: scale(1);
+  opacity: 1;
 }
 
-/* Text inside card */
+/* === Navigation buttons === */
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: white;
+  color: #444;
+  font-size: 2rem;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: background 0.3s;
+}
+.nav-btn:hover {
+  background: #ececec;
+}
+.prev { left: 10px; }
+.next { right: 10px; }
+
+/* === Individual card colors === */
+.truthfulness {
+  background: linear-gradient(135deg, #89f7fe, #66a6ff);
+}
+.safety {
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+}
+.fairness {
+  background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+}
+.robustness {
+  background: linear-gradient(135deg, #a1ffce, #faffd1);
+  color: #333;
+}
+.privacy {
+  background: linear-gradient(135deg, #f6d365, #fda085);
+}
+
+/* Text inside cards */
 .card h3 {
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   font-weight: 700;
-  margin-bottom: 0.6rem;
+  margin-bottom: 1rem;
 }
 .card p {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: #444;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
-/* === Position cards around a circle === */
-.card:nth-child(1) { transform: rotateY(0deg) translateZ(400px); }
-.card:nth-child(2) { transform: rotateY(72deg) translateZ(400px); }
-.card:nth-child(3) { transform: rotateY(144deg) translateZ(400px); }
-.card:nth-child(4) { transform: rotateY(216deg) translateZ(400px); }
-.card:nth-child(5) { transform: rotateY(288deg) translateZ(400px); }
-
-/* === 3D Rotation animation === */
-@keyframes rotate3d {
-  0% { transform: rotateY(0deg); }
-  100% { transform: rotateY(-360deg); }
-}
-
-/* Pause rotation on hover */
-.carousel-3d:hover {
-  animation-play-state: paused;
-}
-
-/* Hover lift */
-.card:hover {
-  transform: scale(1.05) translateZ(400px);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.2);
-  z-index: 10;
+/* Responsive */
+@media (max-width: 768px) {
+  .card {
+    flex: 0 0 95%;
+    padding: 1.5rem;
+  }
+  .nav-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 1.5rem;
+  }
 }
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const track = document.querySelector(".carousel-track");
+  const cards = Array.from(track.children);
+  const prevButton = document.querySelector(".prev");
+  const nextButton = document.querySelector(".next");
+  let index = 0;
+
+  function updateCarousel() {
+    track.style.transform = `translateX(-${index * 100}%)`;
+    cards.forEach((card, i) => card.classList.toggle("active", i === index));
+  }
+
+  nextButton.addEventListener("click", () => {
+    index = (index + 1) % cards.length;
+    updateCarousel();
+  });
+  prevButton.addEventListener("click", () => {
+    index = (index - 1 + cards.length) % cards.length;
+    updateCarousel();
+  });
+
+  updateCarousel();
+});
+</script>
+
 
 
 <section class="trust-carousel-pro">

@@ -425,22 +425,45 @@
   </div>
 </section>
  
-<!-- Image carousel -->
 <section class="hero is-small">
   <div class="hero-body">
     <div class="container">
-      <!-- 简化版：直接显示图像，无需 carousel -->
+      <!-- 居中显示整体 -->
       <div class="columns is-centered">
         <div class="column is-three-quarters">
-          <img src="static/images/overall.jpg" alt="Overview of RoboTrust" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-          <h2 class="subtitle has-text-centered" style="margin-top: 1rem;">
-            Overview of RoboTrust.
-          </h2>
+          <img src="static/images/overall.jpg" 
+               alt="Overview of RoboTrust" 
+               style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+
+          <!-- 渐变标题 -->
+          <div class="has-text-centered" style="margin-top: 1.2rem;">
+            <h2 class="section-title">Overview of RoboTrust</h2>
+            <div class="title-underline"></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+/* 标题样式：居中加粗 */
+.section-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #333;
+  margin-bottom: 0.3rem;
+}
+
+/* 渐变下划线样式 */
+.title-underline {
+  width: 60px;
+  height: 4px;
+  margin: 0 auto;
+  border-radius: 2px;
+  background: linear-gradient(to right, #f28ae6, #ff5858);
+}
+</style>
 <!-- End image carousel -->
 
 

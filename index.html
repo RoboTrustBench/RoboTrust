@@ -429,32 +429,36 @@
     .trust-carousel-pro{
       --slide-w: clamp(260px, 36vw, 500px);
       --slide-h: calc(var(--slide-w) * 9/16);
-      --gap: -120px; /* 负值让两侧视频部分重叠可见 */
-      --radius: 18px;
-      --bez: cubic-bezier(.22,.61,.36,1);
+      --gap: -120px;
+      --radius: 20px;
       --speed: 700ms;
       --persp: 1000px;
       --tilt: 15deg;
-      --z-main: 80px;
+      --z-main: 90px;
       --z-side: 40px;
-      background:#fff; color:#111;
-      display:flex; flex-direction:column; align-items:center;
-      padding:min(6vh,64px) 0; isolation:isolate;
+      background:#fff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:min(6vh,64px) 0;
     }
 
     .title{
       font-weight:900;
-      font-size:clamp(24px,2.5vw,36px);
+      font-size:clamp(26px,2.6vw,38px);
       color:#222;
       position:relative;
-      margin-bottom:40px;
+      margin-bottom:45px;
     }
     .title::after{
       content:"";
       position:absolute;
-      left:50%; transform:translateX(-50%);
+      left:50%;
+      transform:translateX(-50%);
       bottom:-10px;
-      width:60px; height:4px; border-radius:4px;
+      width:70px;
+      height:4px;
+      border-radius:4px;
       background:linear-gradient(90deg,#4e79ff,#7ec8ff);
     }
 
@@ -464,17 +468,19 @@
       overflow:hidden;
       perspective:var(--persp);
       background:radial-gradient(circle at center,
-        rgba(255,255,255,0.96) 0%,
-        rgba(245,245,245,0.9) 50%,
-        rgba(235,235,235,0.85) 100%);
+        rgba(255,255,255,0.98) 0%,
+        rgba(245,245,245,0.95) 45%,
+        rgba(230,230,230,0.9) 100%);
       border-radius:40px;
-      box-shadow:inset 0 0 60px rgba(0,0,0,0.05);
+      box-shadow:inset 0 0 80px rgba(0,0,0,0.05);
       padding:40px 0;
     }
 
     .track{
-      display:flex;align-items:center;gap:var(--gap);
-      transition:transform var(--speed) var(--bez);
+      display:flex;
+      align-items:center;
+      gap:var(--gap);
+      transition:transform var(--speed) cubic-bezier(.22,.61,.36,1);
     }
 
     .slide{
@@ -484,18 +490,20 @@
       overflow:hidden;
       position:relative;
       transform:scale(.8);
-      opacity:0; visibility:hidden;
-      transition:all var(--speed) var(--bez);
+      opacity:0;
+      visibility:hidden;
+      transition:all var(--speed) ease;
       z-index:1;
       cursor:pointer;
+      background:#000; /* ✅ 修复边缘黑边视觉一致 */
     }
 
     .slide video{
-      width:100%; height:100%;
-      object-fit:contain;  /* ✅ 确保视频完整显示 */
-      background:#000;
-      border-radius:inherit;
+      width:100%;
+      height:100%;
+      object-fit:cover;  /* ✅ 填充而非留边 */
       display:block;
+      transition:filter .6s ease, transform .6s ease;
     }
 
     /* 中心视频突出显示 */
@@ -505,31 +513,42 @@
       box-shadow:0 8px 35px rgba(0,0,0,0.25);
     }
 
-    /* 左右视频略小、侧转一点形成层次 */
+    .slide.is-active video{
+      filter:brightness(1.05) contrast(1.05) saturate(1.1);
+    }
+
+    /* 左右视频略小 */
     .slide.is-prev{
       transform:scale(0.82) rotateY(var(--tilt)) translateZ(var(--z-side));
       opacity:.85; visibility:visible; z-index:3;
-      filter:brightness(0.85) saturate(0.9);
+      filter:brightness(0.8);
     }
     .slide.is-next{
       transform:scale(0.82) rotateY(calc(var(--tilt)*-1)) translateZ(var(--z-side));
       opacity:.85; visibility:visible; z-index:3;
-      filter:brightness(0.85) saturate(0.9);
+      filter:brightness(0.8);
     }
 
-    /* 悬停轻放大 */
+    /* 悬停主视频时微放大 */
     .slide.is-active:hover video{
-      transform:scale(1.04);
-      transition:transform 1s ease;
+      transform:scale(1.03);
     }
 
-    /* 导航按钮 */
+    /* 导航箭头 */
     .nav{
-      position:absolute; top:50%; translate:0 -50%;
-      z-index:9; width:44px; height:44px; border-radius:50%;
-      display:grid; place-items:center;
-      background:rgba(0,0,0,.05); border:1px solid rgba(0,0,0,.1);
-      cursor:pointer; color:#222;
+      position:absolute;
+      top:50%;
+      translate:0 -50%;
+      z-index:9;
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      background:rgba(0,0,0,.05);
+      border:1px solid rgba(0,0,0,.1);
+      color:#222;
+      cursor:pointer;
       transition:transform .2s;
     }
     .nav:hover{transform:translateY(-50%) scale(1.1);}
@@ -537,22 +556,67 @@
     .nav svg{width:22px;height:22px;}
 
     /* 指示点 */
-    .dots{display:flex;gap:10px;justify-content:center;margin-top:20px;}
-    .dot{width:8px;height:8px;border-radius:50%;background:#ccc;cursor:pointer;transition:.25s;}
+    .dots{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      margin-top:22px;
+    }
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#ccc;
+      cursor:pointer;
+      transition:.25s;
+    }
     .dot.is-on{background:#4e79ff;width:22px;}
+
+    /* 动态标签 */
+    .dynamic-tag{
+      position:absolute;
+      top:-50px;
+      left:50%;
+      transform:translateX(-50%) scale(0.9);
+      background:rgba(0,0,0,.7);
+      color:#fff;
+      padding:6px 22px;
+      border-radius:16px;
+      font-weight:700;
+      letter-spacing:.3px;
+      opacity:0;
+      transition:all .5s ease;
+      pointer-events:none;
+    }
+    .dynamic-tag.show{
+      opacity:1;
+      transform:translateX(-50%) scale(1);
+    }
   </style>
 
   <h1 class="title">Evaluation Demo</h1>
 
   <div class="trust-carousel" id="tr-carousel">
     <button class="nav prev" aria-label="Previous">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M15 6l-6 6 6 6"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"/>
+      </svg>
     </button>
 
     <div class="track" id="tr-track"></div>
 
     <button class="nav next" aria-label="Next">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M9 18l6-6-6-6"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"/>
+      </svg>
     </button>
   </div>
 
@@ -561,11 +625,11 @@
   <script>
   (() => {
     const slidesData = [
-      { src: "static/videos/truthfulness.mp4" },
-      { src: "static/videos/safety.mp4" },
-      { src: "static/videos/robustness.mp4" },
-      { src: "static/videos/privacy.mp4" },
-      { src: "static/videos/fairness.mp4" },
+      { src: "static/videos/truthfulness.mp4", title: "Truthfulness" },
+      { src: "static/videos/safety.mp4", title: "Safety" },
+      { src: "static/videos/robustness.mp4", title: "Robustness" },
+      { src: "static/videos/privacy.mp4", title: "Privacy" },
+      { src: "static/videos/fairness.mp4", title: "Fairness" },
     ];
 
     const track = document.getElementById('tr-track');
@@ -575,14 +639,21 @@
     const carousel = document.getElementById('tr-carousel');
 
     let slides = [];
-    function makeSlide({src},isClone=false,realIndex=null){
-      const el=document.createElement('div'); el.className='slide';
+    function makeSlide({src,title},isClone=false,realIndex=null){
+      const el=document.createElement('div');
+      el.className='slide';
       el.dataset.realIndex=realIndex??slides.length;
+
       const v=document.createElement('video');
       v.controls=true; v.muted=true; v.loop=false; v.autoplay=false;
       v.playsInline=true; v.preload="metadata";
       v.innerHTML=`<source src="${src}" type="video/mp4">`;
-      el.append(v);
+
+      const tag=document.createElement('div');
+      tag.className='dynamic-tag';
+      tag.textContent=title;
+
+      el.append(v,tag);
       if(isClone) el.dataset.clone="true";
       return el;
     }
@@ -593,9 +664,11 @@
     track.append(lastClone,...slides,firstClone);
 
     const dots=slidesData.map((_,i)=>{
-      const d=document.createElement('div'); d.className='dot';
+      const d=document.createElement('div');
+      d.className='dot';
       d.addEventListener('click',()=>goTo(i+1));
-      dotsBox.append(d); return d;
+      dotsBox.append(d);
+      return d;
     });
 
     let index=1;
@@ -611,22 +684,27 @@
       const prev=track.children[(index-1+total)%total];
       const next=track.children[(index+1)%total];
       curr.classList.add('is-active'); prev.classList.add('is-prev'); next.classList.add('is-next');
+
       [...track.children].forEach((el,i)=>{
         const v=el.querySelector('video');
+        const tag=el.querySelector('.dynamic-tag');
         if(!v) return;
         if(i===index){
           v.play().catch(()=>{});
-          v.onended = () => { step(1); };
+          v.onended=()=>{ step(1); };
+          tag.classList.add('show');
         } else {
           v.pause(); v.onended=null;
+          tag.classList.remove('show');
         }
       });
-      const r=realIndex(); dots.forEach((d,i)=>d.classList.toggle('is-on',i===r));
+      const r=realIndex();
+      dots.forEach((d,i)=>d.classList.toggle('is-on',i===r));
     }
 
     function realIndex(){let i=index-1;if(i<0)i=slides.length-1;if(i>=slides.length)i=0;return i;}
     function render(animate=true){
-      track.style.transition=animate?`transform var(--speed) var(--bez)`:'none';
+      track.style.transition=animate?`transform var(--speed) cubic-bezier(.22,.61,.36,1)`:'none';
       const x=centerOffset()-index*unit();
       track.style.transform=`translateX(${x}px)`; setClasses();
     }
@@ -643,23 +721,15 @@
     function goTo(r1){index=r1;render(true);}
     prevBtn.addEventListener('click',()=>step(-1));
     nextBtn.addEventListener('click',()=>step(+1));
-    [...track.children].forEach((el,i)=>{
-      el.addEventListener('click',(e)=>{
-        if(e.target.tagName.toLowerCase()==='video'||e.target.closest('button'))return;
-        index=i;render(true);
-      });
-    });
 
-    window.addEventListener('load', () => {
-      const firstVideo = track.children[index]?.querySelector('video');
-      if (firstVideo) firstVideo.play().catch(() => {});
+    window.addEventListener('load',()=>{
+      const firstVideo=track.children[index]?.querySelector('video');
+      if(firstVideo) firstVideo.play().catch(()=>{});
+      render(false);
     });
-
-    let rz=null;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>render(false),100);});
-    render(false);
   })();
   </script>
-</section>  
+</section> 
 
 <!-- Image carousel -->
 <section class="hero is-small">

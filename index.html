@@ -525,6 +525,71 @@
     .dots{ display:flex; gap:10px; justify-content:center; margin-top:22px; }
     .dot{ width:8px; height:8px; border-radius:50%; background:#ccc; cursor:pointer; transition:.25s; }
     .dot.is-on{ background:var(--grad-color1); width:22px; }
+    /* ===== 修正 Carousel 发丝黑线 / 边缘缝隙（覆盖原样式）===== */
+
+    /* 1) 去掉侧卡片 3D 旋转与描边阴影，避免负 gap 下的亚像素缝 */
+    .trust-carousel-pro .slide.is-prev,
+    .trust-carousel-pro .slide.is-next{
+      transform: scale(.88) !important;  /* 不再 rotateY(...) */
+      opacity: .92 !important;
+      visibility: visible !important;
+      z-index: 3 !important;
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+    
+    /* 2) 只给中心卡片加阴影，侧卡片保持干净 */
+    .trust-carousel-pro .slide{
+      border: none !important;
+      box-shadow: none !important;
+    }
+    .trust-carousel-pro .slide.is-active{
+      transform: scale(1) !important;
+      box-shadow: 0 18px 48px rgba(0,0,0,.16) !important;
+      border: 0 !important;
+    }
+    
+    /* 3) 在卡片外层加 1px 纯白护边，物理遮住任何缝隙 */
+    .trust-carousel-pro .slide::before{
+      content: "";
+      position: absolute;
+      inset: -1px;                     /* 如仍见细线可改为 -2px */
+      border-radius: inherit;
+      background: #fff;
+      z-index: 2;
+      pointer-events: none;
+    }
+    
+    /* 4) 媒体容器内描边加粗，确保视频与容器之间始终是白色 */
+    .trust-carousel-pro .media::after{
+      box-shadow: 0 0 0 2px #fff inset !important;
+    }
+    
+    /* 5) 侧卡片隐藏控件，避免控件条被误认为“黑边”；中心卡片正常显示 */
+    .trust-carousel-pro .slide:not(.is-active) video{
+      /* 无法直接用 CSS 关 controls，这里仅兜底，主逻辑在 JS：仅中心卡片 v.controls = true */
+      opacity: 1; /* 占位保持 */
+    }
+    .trust-carousel-pro .slide.is-active video{
+      /* 中心卡片显示控件（JS 已处理，这里只是语义性标明） */
+    }
+    
+    /* 6) 轨道与元素强制 GPU 合成，减少 subpixel 抗锯齿导致的发丝缝 */
+    .trust-carousel-pro .track{
+      will-change: transform !important;
+      transform: translate3d(0,0,0);
+    }
+    
+    /* 7) 进一步兜底：卡片/媒体/视频都启用合成层 */
+    .trust-carousel-pro .slide,
+    .trust-carousel-pro .media,
+    .trust-carousel-pro .media > video{
+      will-change: transform;
+      transform: translateZ(0.0001px);
+      backface-visibility: hidden;
+    }
+
   </style>
 
   <h1 class="title">Evaluation Demo</h1>

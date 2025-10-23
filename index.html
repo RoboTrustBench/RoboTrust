@@ -521,7 +521,9 @@
       cursor: pointer;
       background: #fff;          /* contain 留白为白色 */
       overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+      box-shadow: 0 10px 25px rgba(0,0,0,.12);
+      border: 1px solid rgba(0,0,0,0.05);  /* ✅ 超浅描边，盖住发丝缝 */
+      background-clip: padding-box;
     }
     .slide video {
       width: 100%;
@@ -540,17 +542,18 @@
       opacity: 1;
       visibility: visible;
       z-index: 5;
-      box-shadow: 0 10px 25px rgba(0,0,0,.2);
     }
     .slide.is-prev {
       transform: scale(.85) rotateY(15deg);
-      opacity: .85; visibility: visible; z-index: 3;
-      filter: brightness(.9);
+      opacity: .9; visibility: visible; z-index: 3;
+      outline: 1px solid rgba(0,0,0,0.04);     /* ✅ 旋转态再补一层浅 outline */
+      outline-offset: -1px;
     }
     .slide.is-next {
       transform: scale(.85) rotateY(-15deg);
-      opacity: .85; visibility: visible; z-index: 3;
-      filter: brightness(.9);
+      opacity: .9; visibility: visible; z-index: 3;
+      outline: 1px solid rgba(0,0,0,0.04);
+      outline-offset: -1px;
     }
 
     .nav {
@@ -567,6 +570,13 @@
     .dots { display:flex; gap:10px; justify-content:center; margin-top:22px; }
     .dot { width:8px; height:8px; border-radius:50%; background:#ccc; cursor:pointer; transition:.25s; }
     .dot.is-on { background: var(--grad-color1); width:22px; }
+
+    /* ✅ 抗“黑线/发丝缝”补丁：强制 GPU 合成 & 隐藏背面 */
+    .track{ will-change: transform; transform: translateZ(0); }
+    .slide, .slide *{
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+    }
   </style>
 
   <h1 class="title">Evaluation Demo</h1>
@@ -659,7 +669,7 @@
         const v = el.querySelector("video");
         if(!v) return;
 
-        // ✅ 只有中心卡片显示控件，侧边隐藏，避免“深色控件条”像黑边
+        // ✅ 只有中心卡片显示控件，侧边隐藏，避免控件深色条像“黑边”
         v.controls = (i === index);
 
         if(i === index){
@@ -720,6 +730,7 @@
   })();
   </script>
 </section>
+
 
 
 

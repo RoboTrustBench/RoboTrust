@@ -582,125 +582,134 @@
   <div class="dots" id="tr-dots"></div>
 
   <script>
-  (() => {
-    const themeMap = {
-      "Truthfulness": ["#4e79ff", "#7ec8ff"],
-      "Safety": ["#e94b4b", "#ff8a65"],
-      "Robustness": ["#27ae60", "#a8e063"],
-      "Privacy": ["#9b59b6", "#d09cff"],
-      "Fairness": ["#f39c12", "#ffd56b"],
-    };
+(() => {
+  const themeMap = {
+    "Truthfulness": ["#4e79ff", "#7ec8ff"],
+    "Safety": ["#e94b4b", "#ff8a65"],
+    "Robustness": ["#27ae60", "#a8e063"],
+    "Privacy": ["#9b59b6", "#d09cff"],
+    "Fairness": ["#f39c12", "#ffd56b"],
+  };
 
-    const slidesData = [
-      { src: "static/videos/truthfulness.mp4", title: "Truthfulness" },
-      { src: "static/videos/safety.mp4",        title: "Safety" },
-      { src: "static/videos/robustness.mp4",    title: "Robustness" },
-      { src: "static/videos/privacy.mp4",       title: "Privacy" },
-      { src: "static/videos/fairness.mp4",      title: "Fairness" },
-    ];
+  const slidesData = [
+    { src: "static/videos/truthfulness.mp4", title: "Truthfulness" },
+    { src: "static/videos/safety.mp4",        title: "Safety" },
+    { src: "static/videos/robustness.mp4",    title: "Robustness" },
+    { src: "static/videos/privacy.mp4",       title: "Privacy" },
+    { src: "static/videos/fairness.mp4",      title: "Fairness" },
+  ];
 
-    const track = document.getElementById('tr-track');
-    const dotsBox = document.getElementById('tr-dots');
-    const prevBtn = document.querySelector('#tr-carousel .prev');
-    const nextBtn = document.querySelector('#tr-carousel .next');
-    const carousel = document.getElementById('tr-carousel');
-    const activeTag = document.getElementById('active-dimension');
-    const root = document.querySelector('.trust-carousel-pro');
+  const track = document.getElementById('tr-track');
+  const dotsBox = document.getElementById('tr-dots');
+  const prevBtn = document.querySelector('#tr-carousel .prev');
+  const nextBtn = document.querySelector('#tr-carousel .next');
+  const carousel = document.getElementById('tr-carousel');
+  const activeTag = document.getElementById('active-dimension');
+  const root = document.querySelector('.trust-carousel-pro');
 
-    let slides = [];
-    function makeSlide({src,title},isClone=false,realIndex=null){
-      const el=document.createElement('div'); el.className='slide';
-      el.dataset.realIndex=realIndex??slides.length;
-      const v=document.createElement('video');
-      v.controls=true;v.muted=false;v.loop=false;v.autoplay=false;
-      v.playsInline=true;v.preload="metadata";
-      v.innerHTML=`<source src="${src}" type="video/mp4">`;
-      el.append(v);
-      if(isClone) el.dataset.clone="true";
-      return el;
-    }
+  let slides = [];
+  function makeSlide({src,title},isClone=false,realIndex=null){
+    const el=document.createElement('div'); el.className='slide';
+    el.dataset.realIndex=realIndex??slides.length;
+    const v=document.createElement('video');
+    v.controls=true;v.muted=false;v.loop=false;v.autoplay=false;
+    v.playsInline=true;v.preload="metadata";
+    v.innerHTML=`<source src="${src}" type="video/mp4">`;
+    el.append(v);
+    if(isClone) el.dataset.clone="true";
+    return el;
+  }
 
-    slidesData.forEach((d,i)=>slides.push(makeSlide(d,false,i)));
-    const firstClone=makeSlide(slidesData[0],true,0);
-    const lastClone=makeSlide(slidesData[slidesData.length-1],true,slidesData.length-1);
-    track.append(lastClone,...slides,firstClone);
+  slidesData.forEach((d,i)=>slides.push(makeSlide(d,false,i)));
+  const firstClone=makeSlide(slidesData[0],true,0);
+  const lastClone=makeSlide(slidesData[slidesData.length-1],true,slidesData.length-1);
+  track.append(lastClone,...slides,firstClone);
 
-    const dots=slidesData.map((_,i)=>{
-      const d=document.createElement('div'); d.className='dot';
-      d.addEventListener('click',()=>goTo(i+1));
-      dotsBox.append(d); return d;
-    });
+  const dots=slidesData.map((_,i)=>{
+    const d=document.createElement('div'); d.className='dot';
+    d.addEventListener('click',()=>goTo(i+1));
+    dotsBox.append(d); return d;
+  });
 
-    let index=1;
-    const gapPx=()=>parseFloat(getComputedStyle(track).gap)||0;
-    const cardW=()=>track.children[0].offsetWidth;
-    const unit=()=>cardW()+gapPx();
-    const centerOffset=()=> (carousel.clientWidth - cardW())/2;
+  let index=1;
+  const gapPx=()=>parseFloat(getComputedStyle(track).gap)||0;
+  const cardW=()=>track.children[0].offsetWidth;
+  const unit=()=>cardW()+gapPx();
+  const centerOffset=()=> (carousel.clientWidth - cardW())/2;
 
-    function setClasses(){
-      [...track.children].forEach(el=>el.classList.remove('is-active','is-prev','is-next'));
-      const total=track.children.length;
-      const curr=track.children[index];
-      const prev=track.children[(index-1+total)%total];
-      const next=track.children[(index+1)%total];
-      curr.classList.add('is-active'); prev.classList.add('is-prev'); next.classList.add('is-next');
-      [...track.children].forEach((el,i)=>{const v=el.querySelector('video');if(i!==index&&v)v.pause();});
-      const r=realIndex(); dots.forEach((d,i)=>d.classList.toggle('is-on',i===r));
-    }
-
-    function realIndex(){let i=index-1;if(i<0)i=slides.length-1;if(i>=slides.length)i=0;return i;}
-    function render(animate=true){
-      track.style.transition=animate?`transform var(--speed) var(--bez)`:'none';
-      const x=centerOffset()-index*unit();
-      track.style.transform=`translateX(${x}px)`; setClasses();
-    }
-
-    track.addEventListener('transitionend',()=>{
-      const total=track.children.length;
-      if(track.children[index].dataset.clone==="true"){
-        if(index===0)index=slides.length;else if(index===total-1)index=1;
-        render(false);
+  function setClasses(){
+    [...track.children].forEach(el=>el.classList.remove('is-active','is-prev','is-next'));
+    const total=track.children.length;
+    const curr=track.children[index];
+    const prev=track.children[(index-1+total)%total];
+    const next=track.children[(index+1)%total];
+    curr.classList.add('is-active'); prev.classList.add('is-prev'); next.classList.add('is-next');
+    [...track.children].forEach((el,i)=>{
+      const v=el.querySelector('video');
+      if(!v) return;
+      if(i===index){
+        // ✅ 自动播放主视频
+        v.play().catch(()=>{});
+      } else {
+        v.pause();
       }
     });
+    const r=realIndex(); dots.forEach((d,i)=>d.classList.toggle('is-on',i===r));
+  }
 
-    function step(d){index+=d;render(true);}
-    function goTo(r1){index=r1;render(true);}
-    prevBtn.addEventListener('click',()=>step(-1));
-    nextBtn.addEventListener('click',()=>step(+1));
-    [...track.children].forEach((el,i)=>{
-      el.addEventListener('click',(e)=>{
-        if(e.target.tagName.toLowerCase()==='video'||e.target.closest('button'))return;
-        index=i;render(true);
-      });
+  function realIndex(){let i=index-1;if(i<0)i=slides.length-1;if(i>=slides.length)i=0;return i;}
+  function render(animate=true){
+    track.style.transition=animate?`transform var(--speed) var(--bez)`:'none';
+    const x=centerOffset()-index*unit();
+    track.style.transform=`translateX(${x}px)`; setClasses();
+  }
+
+  track.addEventListener('transitionend',()=>{
+    const total=track.children.length;
+    if(track.children[index].dataset.clone==="true"){
+      if(index===0)index=slides.length;else if(index===total-1)index=1;
+      render(false);
+    }
+  });
+
+  function step(d){index+=d;render(true);}
+  function goTo(r1){index=r1;render(true);}
+  prevBtn.addEventListener('click',()=>step(-1));
+  nextBtn.addEventListener('click',()=>step(+1));
+  [...track.children].forEach((el,i)=>{
+    el.addEventListener('click',(e)=>{
+      if(e.target.tagName.toLowerCase()==='video'||e.target.closest('button'))return;
+      index=i;render(true);
     });
-    render(false);
-    let rz=null;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>render(false),100);});
+  });
+  render(false);
+  let rz=null;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>render(false),100);});
 
-    slidesData.forEach((data,i)=>{
-      const slide=track.children[i+1];
-      const tag=document.createElement('div');
-      tag.className='dynamic-tag';
-      tag.textContent=data.title;
-      slide.append(tag);
-      const v=slide.querySelector('video');
+  slidesData.forEach((data,i)=>{
+    const slide=track.children[i+1];
+    const tag=document.createElement('div');
+    tag.className='dynamic-tag';
+    tag.textContent=data.title;
+    slide.append(tag);
+    const v=slide.querySelector('video');
 
-      v.addEventListener('play',()=>{
-        tag.classList.add('show');
-        activeTag.textContent=data.title;
-        activeTag.classList.add('show');
-        const [c1,c2]=themeMap[data.title];
-        root.style.setProperty('--grad-color1',c1);
-        root.style.setProperty('--grad-color2',c2);
-      });
-      const hideTag=()=>{
-        tag.classList.remove('show');
-        activeTag.classList.remove('show');
-      };
-      v.addEventListener('pause',hideTag);
-      v.addEventListener('ended',hideTag);
+    v.addEventListener('play',()=>{
+      tag.classList.add('show');
+      activeTag.textContent=data.title;
+      activeTag.classList.add('show');
+      const [c1,c2]=themeMap[data.title];
+      root.style.setProperty('--grad-color1',c1);
+      root.style.setProperty('--grad-color2',c2);
     });
-  })();
-  </script>
+    const hideTag=()=>{
+      tag.classList.remove('show');
+      activeTag.classList.remove('show');
+    };
+    v.addEventListener('pause',hideTag);
+    v.addEventListener('ended',hideTag);
+  });
+})();
+</script>
 </section>
 
 

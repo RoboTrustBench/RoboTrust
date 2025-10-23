@@ -430,28 +430,43 @@
       /* 可调参数 */
       --slide-w: clamp(260px, 36vw, 480px);
       --slide-h: calc(var(--slide-w) * 9/16);
-      --gap: -88px;                             /* 负间距控制“半重叠” */
+      --gap: -88px;
       --radius: 22px;
       --bez: cubic-bezier(.22,.61,.36,1);
       --speed: 700ms;
-      --shadow-strong: 0 14px 40px rgba(0,0,0,.55);
-      --shadow-soft:   0 10px 24px rgba(0,0,0,.32);
-      --persp: 900px;                           /* 透视越小立体越强 */
-      --tilt: 20deg;                            /* 左右卡片的旋转角度 */
-      --z-main: 90px;                           /* 中心卡片前景深度 */
-      --z-side: 40px;                           /* 两侧卡片前景深度 */
-      --label-color: #0e1628;                   /* 标签深色 */
+      --shadow-strong: 0 14px 40px rgba(0,0,0,.25);
+      --shadow-soft:   0 10px 24px rgba(0,0,0,.12);
+      --persp: 900px;
+      --tilt: 20deg;
+      --z-main: 90px;
+      --z-side: 40px;
+      --label-color: #1a1a1a;
       background:#ffffff; color:#1a1a1a;
       display:flex; flex-direction:column; align-items:center;
       padding:min(6vh,64px) 0; isolation:isolate;
     }
-    .trust-carousel-pro .title{font-weight:800;margin:0 0 8px;font-size:clamp(18px,2.2vw,28px);color:#f1f5ff}
-    .trust-carousel-pro .subtitle{opacity:.75;margin:0 0 26px}
+    .trust-carousel-pro .title{
+      font-weight:900;
+      margin:0 0 12px;
+      font-size:clamp(22px,2.5vw,32px);
+      color:#111;
+      text-shadow:0 2px 4px rgba(0,0,0,.1);
+      z-index:10;
+      position:relative;
+    }
+    .trust-carousel-pro .subtitle{
+      margin:0 0 32px;
+      color:#444;
+      opacity:.85;
+      font-weight:500;
+      position:relative;
+      z-index:9;
+    }
 
     .trust-carousel{
       position:relative;
       width:min(1120px,96vw);
-      overflow:hidden;                          /* 只显示视口内的卡片 */
+      overflow:hidden;
       perspective:var(--persp);
     }
 
@@ -459,11 +474,9 @@
 
     .slide{
       flex:0 0 var(--slide-w); min-width:var(--slide-w); height:var(--slide-h);
-      border-radius:var(--radius); overflow:hidden; position:relative; background:#111;
+      border-radius:var(--radius); overflow:hidden; position:relative; background:#fff;
       transform:scale(.78) translateZ(0);
-      opacity:0;                                /* 默认完全不可见 */
-      visibility:hidden;
-      pointer-events:none;
+      opacity:0; visibility:hidden; pointer-events:none;
       filter:saturate(.75) contrast(.95);
       box-shadow:var(--shadow-soft);
       transition:
@@ -472,58 +485,69 @@
         filter var(--speed) var(--bez),
         z-index var(--speed) var(--bez),
         visibility 0s linear var(--speed);
-      z-index:1; cursor:pointer; will-change: transform;
+      z-index:1; cursor:pointer; will-change:transform;
     }
     .slide video{
       width:100%; height:100%;
-      object-fit:contain;                       /* 关键：完整显示，不裁切 */
+      object-fit:contain;
       background:#000; display:block;
     }
 
-    /* 中心卡片：居前、放大、清晰 */
+    /* 当前居中卡片 */
     .slide.is-active{
       transform:translateZ(var(--z-main)) scale(1.10);
       opacity:1; visibility:visible; pointer-events:auto;
       filter:none; z-index:5; box-shadow:var(--shadow-strong);
       transition:transform var(--speed) var(--bez), opacity var(--speed) var(--bez), filter var(--speed) var(--bez), z-index var(--speed) var(--bez), visibility 0s;
     }
-    /* 左右相邻：更强的旋转与前景深度 */
     .slide.is-prev{
       transform:translateZ(var(--z-side)) scale(.9) rotateY(var(--tilt));
       opacity:.85; visibility:visible; pointer-events:auto; z-index:3;
-      transition:transform var(--speed) var(--bez), opacity var(--speed) var(--bez), visibility 0s;
     }
     .slide.is-next{
       transform:translateZ(var(--z-side)) scale(.9) rotateY(calc(var(--tilt) * -1));
       opacity:.85; visibility:visible; pointer-events:auto; z-index:3;
-      transition:transform var(--speed) var(--bez), opacity var(--speed) var(--bez), visibility 0s;
     }
 
-    /* 透明漂浮标签：深色文字 + 浅色发光，不遮挡画面 */
-    .label{
-      position:absolute; left:0; right:0; bottom:12px;
-      text-align:center; font-weight:800; letter-spacing:.3px;
-      color:var(--label-color);
-      text-shadow:0 2px 8px rgba(255,255,255,.55);
-      pointer-events:none; mix-blend-mode:multiply;
+    /* 原顶部标签隐藏 */
+    .label{display:none;}
+
+    /* 动态播放时出现的顶部标签动画 */
+    .dynamic-tag{
+      position:absolute;
+      top:-42px; left:50%;
+      transform:translateX(-50%);
+      background:#111;
+      color:#fff;
+      padding:6px 18px;
+      border-radius:12px;
+      font-weight:700;
+      letter-spacing:.4px;
+      opacity:0;
+      pointer-events:none;
+      transition:all .6s ease;
+    }
+    .dynamic-tag.show{
+      opacity:1;
+      top:-58px;
     }
 
-    /* 导航与指示点（按钮放到容器内侧，避免被 overflow 裁掉） */
+    /* 导航按钮 */
     .nav{
       position:absolute; top:50%; translate:0 -50%; z-index:9;
       width:44px; height:44px; border-radius:999px;
       display:grid; place-items:center;
-      background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
-      color:#fff; backdrop-filter:blur(6px);
-      cursor:pointer; transition:transform .2s,var(--speed)
+      background:rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.1);
+      color:#222; backdrop-filter:blur(6px);
+      cursor:pointer; transition:transform .2s;
     }
     .nav:hover{transform:translateY(-50%) scale(1.1)}
-    .prev{left:8px} .next{right:8px}           /* 这里从 -4% 改到内侧 8px */
+    .prev{left:8px} .next{right:8px}
     .nav svg{width:22px;height:22px}
 
     .dots{display:flex;gap:10px;justify-content:center;margin-top:20px}
-    .dot{width:8px;height:8px;border-radius:999px;background:#2c3642;cursor:pointer;transition:.25s}
-    .dot.is-on{background:#7aa2ff;width:22px}
+    .dot{width:8px;height:8px;border-radius:999px;background:#d2d8e1;cursor:pointer;transition:.25s}
+    .dot.is-on{background:#3b82f6;width:22px}
 
     @media (max-width:560px){
       .trust-carousel-pro{--gap:-56px}
@@ -549,7 +573,7 @@
 
   <script>
   (() => {
-    /* 1) 替换为你的实际视频路径 */
+    /* 1) 轮播视频数据 */
     const slidesData = [
       { src: "static/videos/truthfulness.mp4", title: "Truthfulness" },
       { src: "static/videos/safety.mp4",        title: "Safety" },
@@ -564,25 +588,19 @@
     const nextBtn = document.querySelector('#tr-carousel .next');
     const carousel= document.getElementById('tr-carousel');
 
-    /* 2) 构建节点（含首尾克隆） */
     let slides = [];
     function makeSlide({src,title}, isClone=false, realIndex=null){
       const el = document.createElement('div'); el.className='slide';
       el.dataset.realIndex = realIndex ?? slides.length;
 
       const v = document.createElement('video');
-      v.controls = true;                        // 显示原生控制条
-      v.muted = false;                          // 正常有声
-      v.loop  = false;                          // 不循环（按时长播放）
-      v.autoplay = false;                       // 不自动播
+      v.controls = true;
+      v.muted = false;
+      v.loop  = false;
+      v.autoplay = false;
       v.playsInline = true;
       v.preload = "metadata";
       v.innerHTML = `<source src="${src}" type="video/mp4">`;
-
-      /* 播放结束后，自动切到下一张（仅当该视频是当前激活卡片） */
-      v.addEventListener('ended', ()=>{
-        if (el.classList.contains('is-active')) step(+1);
-      });
 
       const label = document.createElement('div'); label.className='label'; label.textContent=title;
       el.append(v,label);
@@ -595,26 +613,22 @@
     const lastClone  = makeSlide(slidesData[slidesData.length-1], true, slidesData.length-1);
     track.append(lastClone, ...slides, firstClone);
 
-    /* 3) 指示点 */
     const dots = slidesData.map((_,i)=>{
       const d=document.createElement('div'); d.className='dot';
       d.addEventListener('click', ()=> goTo(i+1));
       dotsBox.append(d); return d;
     });
 
-    /* 4) 状态：索引、尺寸、居中 */
-    let index = 1; // 1 对应第一张真实卡片
+    let index = 1;
     const gapPx = () => (parseFloat(getComputedStyle(track).gap) || 0);
     const cardW = () => track.children[0].offsetWidth;
     const unit  = () => cardW() + gapPx();
     const centerOffset = () => (carousel.clientWidth - cardW()) / 2;
 
     function setClasses(){
-      /* 清空状态 */
       [...track.children].forEach(el=>{
         el.classList.remove('is-active','is-prev','is-next');
       });
-      /* 当前与左右邻居 */
       const total = track.children.length;
       const curr  = track.children[index];
       const prev  = track.children[(index-1+total)%total];
@@ -622,14 +636,10 @@
       curr.classList.add('is-active');
       prev.classList.add('is-prev');
       next.classList.add('is-next');
-
-      /* 离开当前时，暂停其它视频（不重置进度，保留用户操作） */
       [...track.children].forEach((el,i)=>{
         const v = el.querySelector('video'); if(!v) return;
         if(i!==index){ v.pause(); }
       });
-
-      /* dots */
       const r = realIndex();
       dots.forEach((d,i)=> d.classList.toggle('is-on', i===r));
     }
@@ -640,12 +650,11 @@
 
     function render(animate=true){
       track.style.transition = animate ? `transform var(--speed) var(--bez)` : 'none';
-      const x = centerOffset() - index * unit();     // 居中当前卡片
+      const x = centerOffset() - index * unit();
       track.style.transform  = `translateX(${x}px)`;
       setClasses();
     }
 
-    /* 首尾无缝 */
     track.addEventListener('transitionend', ()=>{
       const total = track.children.length;
       if(track.children[index].dataset.clone === "true"){
@@ -655,34 +664,40 @@
       }
     });
 
-    /* 交互 */
     function step(d){ index+=d; render(true); }
     function goTo(r1){ index=r1; render(true); }
     prevBtn.addEventListener('click', ()=>step(-1));
     nextBtn.addEventListener('click', ()=>step(+1));
 
-    /* 点击任意卡片，直接居中（不强制播放） */
     [...track.children].forEach((el,i)=>{
       el.addEventListener('click', (e)=>{
-        // 避免点击 video 控件触发切换
         if(e.target.tagName.toLowerCase()==='video' || e.target.closest('button')) return;
         index = i; render(true);
       });
     });
 
-    /* 取消固定时长自动轮播——由视频 ended 决定是否切换 */
-    // 如需恢复固定自动轮播，可在此加一个 setInterval(step, X)
-
-    /* 初始渲染 */
     render(false);
-
-    /* 自适应：窗口变化后保持中心对齐 */
     let rz=null; window.addEventListener('resize', ()=>{
       clearTimeout(rz); rz=setTimeout(()=>render(false), 100);
+    });
+
+    /* 动态维度标签动画显示 */
+    slidesData.forEach((data, i)=>{
+      const slide = track.children[i+1];
+      const tag = document.createElement('div');
+      tag.className = 'dynamic-tag';
+      tag.textContent = data.title;
+      slide.append(tag);
+
+      const v = slide.querySelector('video');
+      v.addEventListener('play', ()=> tag.classList.add('show'));
+      v.addEventListener('pause', ()=> tag.classList.remove('show'));
+      v.addEventListener('ended', ()=> tag.classList.remove('show'));
     });
   })();
   </script>
 </section>
+
 
    
 

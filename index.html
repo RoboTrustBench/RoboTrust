@@ -436,6 +436,8 @@
       --tilt: 15deg;
       --z-main: 90px;
       --z-side: 40px;
+      --grad-color1: #4e79ff;
+      --grad-color2: #7ec8ff;
       background: #fff;
       display: flex;
       flex-direction: column;
@@ -460,13 +462,13 @@
       width: 70px;
       height: 4px;
       border-radius: 4px;
-      background: linear-gradient(90deg, #4e79ff, #7ec8ff);
+      background: linear-gradient(90deg, var(--grad-color1), var(--grad-color2));
     }
 
     .trust-carousel {
       position: relative;
       width: min(1200px, 96vw);
-      overflow: visible;
+      overflow: hidden; /* ✅ 限制视频不超框 */
       perspective: var(--persp);
       background: radial-gradient(
         circle at center,
@@ -498,6 +500,7 @@
       z-index: 1;
       cursor: pointer;
       background: #000;
+      overflow: hidden;
     }
 
     .slide video {
@@ -509,13 +512,13 @@
       transition: filter 0.6s ease, transform 0.6s ease;
     }
 
-    /* 标签：移出 video，直接挂在 .slide 上 */
+    /* 标签样式 */
     .dynamic-tag {
       position: absolute;
       top: -45px;
       left: 50%;
       transform: translateX(-50%) scale(0.9);
-      background: rgba(0, 0, 0, 0.75);
+      background: linear-gradient(90deg, var(--grad-color1), var(--grad-color2));
       color: #fff;
       padding: 6px 22px;
       border-radius: 16px;
@@ -526,6 +529,7 @@
       pointer-events: none;
       white-space: nowrap;
       z-index: 10;
+      box-shadow: 0 0 10px rgba(0,0,0,0.25);
     }
 
     .dynamic-tag.show {
@@ -534,11 +538,11 @@
     }
 
     .slide.is-active {
-      transform: scale(1) translateZ(var(--z-main));
+      transform: scale(1);
       opacity: 1;
       visibility: visible;
       z-index: 5;
-      box-shadow: 0 8px 35px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
     }
 
     .slide.is-active video {
@@ -546,19 +550,19 @@
     }
 
     .slide.is-prev {
-      transform: scale(0.82) rotateY(var(--tilt)) translateZ(var(--z-side));
+      transform: scale(0.85) rotateY(var(--tilt));
       opacity: 0.85;
       visibility: visible;
       z-index: 3;
-      filter: brightness(0.8);
+      filter: brightness(0.85);
     }
 
     .slide.is-next {
-      transform: scale(0.82) rotateY(calc(var(--tilt) * -1)) translateZ(var(--z-side));
+      transform: scale(0.85) rotateY(calc(var(--tilt) * -1));
       opacity: 0.85;
       visibility: visible;
       z-index: 3;
-      filter: brightness(0.8);
+      filter: brightness(0.85);
     }
 
     .nav {
@@ -611,7 +615,7 @@
     }
 
     .dot.is-on {
-      background: #4e79ff;
+      background: var(--grad-color1);
       width: 22px;
     }
   </style>
@@ -640,6 +644,14 @@
 
   <script>
     (() => {
+      const themeMap = {
+        "Truthfulness": ["#4e79ff", "#7ec8ff"],
+        "Safety": ["#e94b4b", "#ff8a65"],
+        "Robustness": ["#27ae60", "#a8e063"],
+        "Privacy": ["#9b59b6", "#d09cff"],
+        "Fairness": ["#f39c12", "#ffd56b"],
+      };
+
       const slidesData = [
         { src: "static/videos/truthfulness.mp4", title: "Truthfulness" },
         { src: "static/videos/safety.mp4", title: "Safety" },
@@ -653,6 +665,7 @@
       const prevBtn = document.querySelector("#tr-carousel .prev");
       const nextBtn = document.querySelector("#tr-carousel .next");
       const carousel = document.getElementById("tr-carousel");
+      const root = document.querySelector(".trust-carousel-pro");
 
       let slides = [];
       function makeSlide({ src, title }, isClone = false, realIndex = null) {
@@ -712,10 +725,13 @@
           const tag = el.querySelector(".dynamic-tag");
           if (!v) return;
           if (i === index) {
+            const title = tag.textContent;
+            const [c1, c2] = themeMap[title];
+            root.style.setProperty("--grad-color1", c1);
+            root.style.setProperty("--grad-color2", c2);
+            tag.style.background = `linear-gradient(90deg, ${c1}, ${c2})`;
             v.play().catch(() => {});
-            v.onended = () => {
-              step(1);
-            };
+            v.onended = () => step(1);
             tag.classList.add("show");
           } else {
             v.pause();
@@ -772,6 +788,7 @@
     })();
   </script>
 </section>
+
 
 
 <!-- Image carousel -->
